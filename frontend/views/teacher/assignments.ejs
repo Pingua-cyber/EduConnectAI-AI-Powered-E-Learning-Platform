@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Assignments - EduConnect AI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf4ff; }
+        h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="text-[#32294f] pb-12">
+    <%- include('../partials/teacher-sidebar') %>
+
+    <!-- Top Navigation -->
+    <nav class="sticky top-0 z-50 bg-[#faf4ff]/80 backdrop-blur-xl border-b border-[#e2d7ff]/50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="/teacher/dashboard" class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4a40e0] to-[#702ae1] flex items-center justify-center text-white font-bold shadow-lg">
+                    <span class="material-symbols-outlined text-xl">school</span>
+                </a>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex flex-col items-end mr-2">
+                    <span class="font-bold text-sm leading-tight"><%= user.name %></span>
+                    <span class="text-xs text-[#32294f]/60 font-medium capitalize"><%= user.role %></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <header class="mb-10 flex justify-between items-end">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">Assignments</h1>
+                <p class="text-[#32294f]/70 font-medium">Track and grade student submissions.</p>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <% assignments.forEach(assignment => { %>
+                <div class="bg-white rounded-3xl border border-[#e2d7ff] p-6 shadow-sm hover:border-[#4a40e0] transition-all group">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-12 h-12 rounded-2xl bg-[#f5eeff] text-[#4a40e0] flex items-center justify-center">
+                            <span class="material-symbols-outlined text-2xl">assignment</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider <%= new Date(assignment.deadline) < new Date() ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600' %>">
+                                <%= new Date(assignment.deadline) < new Date() ? 'Closed' : 'Active' %>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <h3 class="font-bold text-xl mb-1 group-hover:text-[#4a40e0] transition-colors"><%= assignment.title %></h3>
+                    <p class="text-xs font-bold text-[#4a40e0] mb-3 uppercase tracking-wider"><%= assignment.subject_name %></p>
+                    
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center gap-2 text-sm text-[#32294f]/60">
+                            <span class="material-symbols-outlined text-sm">calendar_today</span>
+                            <span>Due: <%= new Date(assignment.deadline).toLocaleDateString() %></span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm text-[#32294f]/60">
+                            <span class="material-symbols-outlined text-sm">group</span>
+                            <span><%= assignment.submission_count %> Submissions</span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <a href="/teacher/assignment/<%= assignment.id %>/submissions" class="flex-1 bg-[#4a40e0] text-white text-center py-3 rounded-xl font-bold hover:bg-[#3d30d4] transition-colors flex items-center justify-center">
+                            Review Submissions
+                        </a>
+                        <% if (assignment.file_path) { %>
+                            <a href="<%= assignment.file_path %>" target="_blank" class="w-12 bg-[#f5eeff] text-[#4a40e0] flex items-center justify-center rounded-xl hover:bg-[#e8deff] transition-colors" title="Download Material">
+                                <span class="material-symbols-outlined">download</span>
+                            </a>
+                        <% } %>
+                        <form action="/teacher/assignment/<%= assignment.id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this assignment? All student submissions will also be permanently deleted.');" class="flex">
+                            <button type="submit" class="w-12 flex items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-colors" title="Delete Assignment">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            <% }) %>
+            
+            <% if (assignments.length === 0) { %>
+                <div class="col-span-full bg-white rounded-3xl border-2 border-dashed border-[#e2d7ff] p-20 text-center">
+                    <span class="material-symbols-outlined text-6xl text-[#e2d7ff] mb-4">assignment_late</span>
+                    <p class="text-[#32294f]/50 font-bold text-lg">No assignments created yet.</p>
+                    <a href="/teacher/dashboard" class="text-[#4a40e0] font-bold mt-2 inline-block">Post your first assignment from the dashboard</a>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    
+</body>
+</html>

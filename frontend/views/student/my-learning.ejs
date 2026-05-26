@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Learning - EduConnect AI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf4ff; }
+        h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="text-[#32294f] pb-12">
+    <%- include('../partials/student-sidebar') %>
+
+    <!-- Top Navigation -->
+    <nav class="sticky top-0 z-50 bg-[#faf4ff]/80 backdrop-blur-xl border-b border-[#e2d7ff]/50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4a40e0] to-[#702ae1] flex items-center justify-center text-white font-bold shadow-lg shadow-[#4a40e0]/20">
+                    <span class="material-symbols-outlined text-xl">school</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex flex-col items-end mr-2">
+                    <span class="font-bold text-sm leading-tight"><%= user.name %></span>
+                    <span class="text-xs text-[#32294f]/60 font-medium">Student</span>
+                </div>
+                <div class="relative">
+                    <button onclick="toggleProfileDropdown()" class="w-10 h-10 rounded-full overflow-hidden bg-[#e8deff] text-[#4a40e0] flex items-center justify-center font-bold border-2 border-white shadow-sm hover:scale-105 transition-transform">
+                        <% if (user.profile_image) { %>
+                            <img alt="User profile picture" class="w-full h-full object-cover" src="<%= user.profile_image %>"/>
+                        <% } else { %>
+                            <%= user.name.charAt(0).toUpperCase() %>
+                        <% } %>
+                    </button>
+
+                    <!-- Profile Dropdown -->
+                    <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-[#e2d7ff] py-2 hidden z-[60]">
+                        <div class="px-4 py-2 border-b border-[#e2d7ff] mb-1">
+                            <p class="text-[10px] text-[#32294f]/50 font-bold uppercase tracking-wider">Account Settings</p>
+                        </div>
+                        <a href="/student/profile" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-[#32294f] hover:bg-[#f5eeff] transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">account_circle</span> My Profile
+                        </a>
+                        <a href="/auth/logout" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-500 hover:bg-red-50 transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">logout</span> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        
+        <header class="mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">My Learning Journey</h1>
+            <p class="text-[#32294f]/70 font-medium">Track your progress, scores, and active courses all in one place.</p>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-gradient-to-br from-[#4a40e0] to-[#702ae1] rounded-3xl p-6 text-white shadow-xl shadow-[#4a40e0]/20 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-20">
+                    <span class="material-symbols-outlined text-6xl" style="font-variation-settings: 'FILL' 1;">analytics</span>
+                </div>
+                <h3 class="text-white/80 font-semibold mb-1 relative z-10">Average Score</h3>
+                <div class="text-4xl font-extrabold tracking-tight relative z-10 mb-2"><%= averageScore %>%</div>
+                <div class="text-sm text-white/70 font-medium relative z-10">Across all completed quizzes</div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 border border-[#e2d7ff] shadow-sm relative overflow-hidden group hover:border-[#9795ff] transition-colors">
+                <div class="absolute top-0 right-0 p-4 text-[#e8deff] group-hover:text-[#dcc9ff] transition-colors">
+                    <span class="material-symbols-outlined text-6xl" style="font-variation-settings: 'FILL' 1;">import_contacts</span>
+                </div>
+                <h3 class="text-[#32294f]/60 font-semibold mb-1 relative z-10">Active Courses</h3>
+                <div class="text-4xl font-extrabold text-[#32294f] tracking-tight relative z-10 mb-2"><%= activeCourses ? activeCourses.length : 0 %></div>
+                <div class="text-sm text-[#32294f]/60 font-medium relative z-10">Courses with activity</div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 border border-[#e2d7ff] shadow-sm relative overflow-hidden group hover:border-[#9795ff] transition-colors">
+                <div class="absolute top-0 right-0 p-4 text-[#e8deff] group-hover:text-[#dcc9ff] transition-colors">
+                    <span class="material-symbols-outlined text-6xl" style="font-variation-settings: 'FILL' 1;">assignment_turned_in</span>
+                </div>
+                <h3 class="text-[#32294f]/60 font-semibold mb-1 relative z-10">Quizzes Completed</h3>
+                <div class="text-4xl font-extrabold text-[#32294f] tracking-tight relative z-10 mb-2"><%= quizScores ? quizScores.length : 0 %></div>
+                <div class="text-sm text-[#32294f]/60 font-medium relative z-10">Total assessments taken</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Active Courses -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold">Active Courses</h2>
+                </div>
+                
+                <% if (activeCourses && activeCourses.length > 0) { %>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <% activeCourses.forEach(course => { %>
+                            <div class="bg-white rounded-3xl p-6 border border-[#e2d7ff] shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div class="w-12 h-12 rounded-2xl bg-[#f5eeff] text-[#4a40e0] flex items-center justify-center">
+                                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">book</span>
+                                    </div>
+                                    <span class="px-3 py-1 bg-[#e8deff] text-[#4a40e0] text-xs font-bold rounded-full"><%= course.subject_name %></span>
+                                </div>
+                                <h3 class="font-bold text-lg mb-2"><%= course.title %></h3>
+                                <p class="text-sm text-[#32294f]/60 line-clamp-2 mb-6"><%= course.description || 'Explore the materials and quizzes for this course.' %></p>
+                                
+                                <div class="w-full bg-[#f5eeff] rounded-full h-2 mb-4">
+                                    <div class="bg-[#4a40e0] h-2 rounded-full" style="width: 100%"></div>
+                                </div>
+                                
+                                <div class="flex gap-3 mt-auto">
+                                    <a href="/student/course/<%= course.id %>" class="flex-1 text-center py-3 rounded-xl bg-[#faf4ff] text-[#4a40e0] font-bold hover:bg-[#e8deff] transition-colors">
+                                        Continue Learning
+                                    </a>
+                                    <button onclick="removeCourse('<%= course.id %>', '<%= course.title %>')" class="w-12 h-12 flex items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm">
+                                        <span class="material-symbols-outlined">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } else { %>
+                    <div class="bg-white rounded-3xl p-10 text-center border border-[#e2d7ff] border-dashed">
+                        <div class="w-16 h-16 bg-[#f5eeff] text-[#4a40e0] rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="material-symbols-outlined text-3xl">school</span>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">No Active Courses</h3>
+                        <p class="text-[#32294f]/60 mb-6">You haven't interacted with any courses yet. Take a quiz to see your progress here.</p>
+                        <a href="/student/courses" class="inline-flex items-center gap-2 bg-[#4a40e0] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#3d30d4] transition-colors">
+                            Explore Courses
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+
+            <!-- Recent Quiz Scores -->
+            <div class="space-y-6">
+                <h2 class="text-xl font-bold">Recent Quiz Scores</h2>
+                
+                <div class="bg-white rounded-3xl border border-[#e2d7ff] shadow-sm overflow-hidden">
+                    <% if (quizScores && quizScores.length > 0) { %>
+                        <div class="divide-y divide-[#e2d7ff]">
+                            <% quizScores.slice(0, 5).forEach(score => { %>
+                                <div class="p-5 hover:bg-[#faf4ff] transition-colors flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-bold text-sm mb-1"><%= score.quiz_title %></h4>
+                                        <p class="text-xs text-[#32294f]/60"><%= score.course_title %></p>
+                                        <p class="text-[10px] text-[#32294f]/40 mt-1 uppercase tracking-wider"><%= new Date(score.created_at).toLocaleDateString() %></p>
+                                    </div>
+                                    <div class="flex-shrink-0">
+                                        <% let colorClass = score.score >= 80 ? 'bg-[#e6f4ea] text-[#137333]' : (score.score >= 50 ? 'bg-[#fef7e0] text-[#b06000]' : 'bg-[#fce8e6] text-[#c5221f]'); %>
+                                        <div class="w-12 h-12 rounded-full <%= colorClass %> flex items-center justify-center font-bold text-sm">
+                                            <%= score.score %>%
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                        <% if (quizScores.length > 5) { %>
+                            <div class="p-4 bg-[#faf4ff] text-center border-t border-[#e2d7ff]">
+                                <button class="text-[#4a40e0] font-semibold text-sm hover:underline">View All Scores</button>
+                            </div>
+                        <% } %>
+                    <% } else { %>
+                        <div class="p-8 text-center">
+                            <span class="material-symbols-outlined text-[#e2d7ff] text-4xl mb-2">assignment</span>
+                            <p class="text-sm text-[#32294f]/60">No quizzes completed yet.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    
+    <script>
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        async function removeCourse(courseId, courseTitle) {
+            if (!confirm(`Hide "${courseTitle}" from your active list? Your scores and progress will be preserved, but it will no longer appear here.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/student/course/${courseId}/remove`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    // Refresh the page or remove the element
+                    window.location.reload();
+                } else {
+                    alert(result.error || "Failed to remove course");
+                }
+            } catch (err) {
+                console.error("Error removing course:", err);
+                alert("An error occurred while removing the course.");
+            }
+        }
+    </script>
+</body>
+</html>

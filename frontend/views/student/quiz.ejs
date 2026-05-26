@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>
+    <%= typeof quiz !=="undefined" ? quiz.title : "Quiz" %>
+  </title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-variant": "#e2d7ff",
+            "surface-tint": "#4a40e0",
+            "primary-fixed-dim": "#8885ff",
+            "on-surface": "#32294f",
+            "tertiary-fixed-dim": "#ff7986",
+            "inverse-surface": "#10062d",
+            "secondary-container": "#dcc9ff",
+            "on-tertiary-fixed": "#39000b",
+            "surface-container": "#ede4ff",
+            "secondary": "#702ae1",
+            "surface-dim": "#dacdff",
+            "outline-variant": "#b2a6d5",
+            "on-error": "#ffefef",
+            "secondary-fixed": "#dcc9ff",
+            "secondary-fixed-dim": "#d0b8ff",
+            "on-secondary-container": "#5b00c7",
+            "tertiary-container": "#ff9099",
+            "on-tertiary": "#ffefef",
+            "tertiary": "#b80438",
+            "on-tertiary-fixed-variant": "#780021",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-highest": "#e2d7ff",
+            "on-error-container": "#510017",
+            "error": "#b41340",
+            "on-secondary-fixed": "#430097",
+            "on-background": "#32294f",
+            "surface-bright": "#faf4ff",
+            "primary-container": "#9795ff",
+            "error-dim": "#a70138",
+            "on-primary-container": "#14007e",
+            "background": "#faf4ff",
+            "tertiary-dim": "#a20030",
+            "on-surface-variant": "#5f557f",
+            "on-secondary-fixed-variant": "#6514d6",
+            "surface-container-low": "#f5eeff",
+            "primary": "#4a40e0",
+            "primary-dim": "#3d30d4",
+            "secondary-dim": "#6411d5",
+            "inverse-on-surface": "#a296c4",
+            "surface": "#faf4ff",
+            "on-tertiary-container": "#68001b",
+            "on-primary-fixed": "#000000",
+            "inverse-primary": "#8582ff",
+            "on-secondary": "#f8f0ff",
+            "outline": "#7b719c",
+            "primary-fixed": "#9795ff",
+            "error-container": "#f74b6d",
+            "on-primary": "#f4f1ff",
+            "surface-container-high": "#e8deff",
+            "tertiary-fixed": "#ff9099",
+            "on-primary-fixed-variant": "#1a0099"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "3xl": "1.5rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Plus Jakarta Sans"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          }
+        },
+      },
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .math-font {
+      font-family: "Times New Roman", serif;
+      font-style: italic;
+    }
+  </style>
+  <style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+
+<body class="bg-surface text-on-surface min-h-screen flex flex-col">
+  <%- include('../partials/student-sidebar') %>
+    <!-- TopAppBar -->
+    <header
+      class="w-full top-0 sticky z-40 flex justify-between items-center px-6 py-4 bg-gradient-to-b from-[#f5eeff] to-[#faf4ff] dark:from-[#1a103d] dark:to-[#10062d]">
+      <div class="flex items-center gap-4">
+        <a href="/student/course/<%= typeof courseId !== 'undefined' ? courseId : '' %>"
+          class="p-2 rounded-full hover:bg-[#f5eeff] dark:hover:bg-[#1a103d] transition-colors active:scale-95 duration-200 inline-flex items-center justify-center">
+          <span class="material-symbols-outlined text-[#4a40e0] dark:text-[#9795ff]" data-icon="close">close</span>
+        </a>
+        <h1 class="text-[#32294f] dark:text-[#e2d7ff] font-bold text-lg md:text-[1.75rem] leading-tight tracking-tight">
+          <%= typeof quiz !=="undefined" ? quiz.title : "Quiz" %>
+        </h1>
+      </div>
+      <div class="flex items-center gap-2 px-4 py-2 bg-surface-container-highest rounded-full">
+        <span class="material-symbols-outlined text-[#4a40e0]" data-icon="timer">timer</span>
+        <span class="text-[#4a40e0] font-bold font-body text-[0.875rem]" id="timerDisplay">15:00</span>
+      </div>
+    </header>
+    <main class="flex-grow flex flex-col max-w-4xl mx-auto w-full px-6 py-8 pb-12">
+      <!-- Progress Section -->
+      <div class="mb-10">
+        <div class="flex justify-between items-center mb-2">
+          <span class="font-bold text-sm text-primary tracking-wide uppercase">Your Progress</span>
+          <span class="font-bold text-sm text-on-surface"><span id="answeredCount">0</span> of <%= typeof questions !== 'undefined' ? questions.length : 0 %> Answered</span>
+        </div>
+        <div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+          <div id="progressBar" class="h-full bg-gradient-to-r from-secondary to-primary w-[0%] rounded-full transition-all duration-300"></div>
+        </div>
+      </div>
+
+      <!-- Question Canvas -->
+      <div class="space-y-8">
+        <form id="quizForm" onsubmit="submitQuiz(event)">
+          <% if (typeof questions !=='undefined' && questions.length> 0) { %>
+            <% questions.forEach((q, index)=> { %>
+              <div class="bg-surface-container-lowest p-8 rounded-3xl shadow-sm mb-6 mt-4 question-block"
+                id="question-<%= index %>">
+                <h2 class="text-xl md:text-2xl font-bold text-on-surface leading-snug mb-6">
+                  <%= index + 1 %>. <%= q.question %>
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <% q.options.forEach((opt, optIndex)=> { %>
+                    <label
+                      class="group flex items-center text-left p-6 bg-surface-container-low hover:bg-surface-container-highest transition-all duration-300 rounded-2xl cursor-pointer shadow-sm">
+                      <input type="radio" name="q<%= index %>" value="<%= opt %>" required class="hidden peer" />
+                      <div
+                        class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-white rounded-xl shadow-sm text-primary font-bold mr-4 peer-checked:bg-primary peer-checked:text-white transition-colors border ring-2 ring-transparent peer-checked:ring-primary/20">
+                      </div>
+                      <div class="text-on-surface font-medium text-lg">
+                        <%= opt %>
+                      </div>
+                    </label>
+                    <% }) %>
+                </div>
+              </div>
+              <% }) %>
+
+                <!-- Submit Controls -->
+                <div id="quizNavControls" class="flex justify-end items-center mt-8">
+                  <button type="submit" id="nextBtn"
+                    class="px-8 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary-dim transition-colors shadow-lg shadow-primary/20 flex items-center">
+                    <span id="nextBtnText">Submit Quiz</span> <span id="nextBtnIcon"
+                      class="material-symbols-outlined ml-2">send</span>
+                  </button>
+                </div>
+                <% } %>
+        </form>
+
+        <!-- Result Container -->
+        <div id="resultContainer" class="hidden text-center py-12">
+          <div
+            class="w-24 h-24 bg-surface-container-high rounded-full flex items-center justify-center mx-auto mb-6 text-primary">
+            <span class="material-symbols-outlined text-5xl">emoji_events</span>
+          </div>
+          <h2 class="text-3xl font-headline font-extrabold text-on-surface mb-2">Quiz Completed!</h2>
+          <div class="text-6xl font-black text-primary mb-8" id="scoreDisplay"></div>
+          <a href="/student/course/<%= typeof courseId !== 'undefined' ? courseId : '' %>"
+            class="bg-primary text-white font-bold px-8 py-3 rounded-full transition-colors hover:bg-primary-dim">Return
+            to Course</a>
+        </div>
+      </div>
+
+      <script>
+        const totalQuestions = parseInt('<%= typeof questions !== "undefined" ? questions.length : 0 %>', 10);
+
+        // Timer Logic
+        let timeLeft = 15 * 60; // 15 minutes
+        const timerDisplay = document.getElementById('timerDisplay');
+        const timerInterval = setInterval(() => {
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            submitQuiz(new Event('submit'));
+          } else {
+            timeLeft--;
+            const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const s = (timeLeft % 60).toString().padStart(2, '0');
+            timerDisplay.innerText = m + ':' + s;
+          }
+        }, 1000);
+
+        // Dynamic Progress Bar
+        document.getElementById('quizForm').addEventListener('change', () => {
+          const form = document.getElementById('quizForm');
+          const formData = new FormData(form);
+          const answeredCount = Array.from(formData.keys()).length;
+          
+          document.getElementById('answeredCount').innerText = answeredCount;
+          const percentage = totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0;
+          document.getElementById('progressBar').style.width = percentage + '%';
+        });
+
+        async function submitQuiz(e) {
+          if (e && typeof e.preventDefault === 'function') {
+            e.preventDefault();
+          }
+          clearInterval(timerInterval);
+          const form = document.getElementById('quizForm');
+          const formData = new FormData(form);
+          const answers = Object.fromEntries(formData.entries());
+
+          const btn = document.getElementById('nextBtn');
+          if (btn) {
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin mr-2">refresh</span> Submitting...';
+            btn.disabled = true;
+          }
+          try {
+            const response = await fetch('/student/course/<%= typeof courseId !== "undefined" ? courseId : "" %>/quiz/<%= typeof quiz !== "undefined" ? quiz.id : "" %>/submit', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(answers)
+            });
+            const data = await response.json();
+            if (data.success) {
+              form.style.display = 'none';
+              const quizNavControls = document.getElementById('quizNavControls');
+              if (quizNavControls) quizNavControls.style.display = 'none';
+              document.getElementById('resultContainer').style.display = 'block';
+              document.getElementById('scoreDisplay').innerText = data.score + '%';
+            } else {
+              alert('Error: ' + data.error);
+              btn.innerHTML = '<span id="nextBtnText">Submit Quiz</span> <span id="nextBtnIcon" class="material-symbols-outlined ml-2">send</span>';
+              btn.disabled = false;
+            }
+          } catch (err) {
+            alert('Server error');
+            btn.innerHTML = '<span id="nextBtnText">Submit Quiz</span> <span id="nextBtnIcon" class="material-symbols-outlined ml-2">send</span>';
+            btn.disabled = false;
+          }
+        }
+      </script>
+      <!-- Contextual Card / Hint Area -->
+
+      <div class="flex flex-col md:flex-row gap-6 mt-12">
+        <div class="flex-1 bg-surface-container-high/50 p-6 rounded-2xl flex items-start gap-4">
+          <div class="bg-primary-container p-3 rounded-xl">
+            <span class="material-symbols-outlined text-on-primary-container" data-icon="lightbulb">lightbulb</span>
+          </div>
+          <div>
+            <h4 class="font-bold text-on-surface mb-1">Study Tip</h4>
+            <p class="text-on-surface-variant text-sm">Review the materials in the course detail page if you get stuck
+              on any questions.</p>
+          </div>
+        </div>
+        <div class="w-full md:w-64 bg-inverse-surface text-on-primary rounded-2xl p-6 relative overflow-hidden">
+          <div class="relative z-10">
+            <h4 class="font-bold text-sm opacity-70 uppercase mb-2">Reference</h4>
+            <img alt="Study reference" class="w-full h-24 object-cover rounded-lg mb-3"
+              data-alt="close-up of a page from a high-end textbook"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXo1BSBL-vrykoIMWNPVtcuBgN2t765CiEuyENOQuJ2HRR8699_ZeZMAB7e1g9oh5ym1aV6hzjMbkBQI_VFx4QA01hQTGIabL1A5vPu8QCpM7BlAeetzuM7hfdDzKkSYrF0-M9rwcZwh8y8zNJqYZdcLoz48_jyfBoXri-KFsZZAq6dILUPRDfPCWY9e5ODPRh1PsMdgB63_gF6FdRF0v2N8wthwggqPA8XmUJh741CoMoPyJV-pwHQq5HzUo8xwp_FMsEx97PBJO6" />
+            <p class="text-xs font-medium">Course Materials</p>
+          </div>
+        </div>
+      </div>
+      </div>
+    </main>
+
+</body>
+
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Analytics - EduConnect AI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #faf4ff;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="text-[#32294f] pb-12">
+    <%- include('../partials/teacher-sidebar') %>
+
+    <!-- Top Navigation -->
+    <nav class="sticky top-0 z-50 bg-[#faf4ff]/80 backdrop-blur-xl border-b border-[#e2d7ff]/50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4a40e0] to-[#702ae1] flex items-center justify-center text-white font-bold shadow-lg shadow-[#4a40e0]/20">
+                    <span class="material-symbols-outlined text-xl">school</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex flex-col items-end mr-2">
+                    <span class="font-bold text-sm leading-tight">
+                        <%= user.name %>
+                    </span>
+                    <span class="text-xs text-[#32294f]/60 font-medium capitalize">
+                        <%= user.role %>
+                    </span>
+                </div>
+                <div class="relative">
+                    <button onclick="toggleProfileDropdown()"
+                        class="w-10 h-10 rounded-full bg-[#e8deff] text-[#4a40e0] flex items-center justify-center font-bold border-2 border-white shadow-sm overflow-hidden hover:ring-2 hover:ring-[#4a40e0] transition-all"
+                        id="profileBtn">
+                        <% if (user.profile_image) { %>
+                            <img src="<%= user.profile_image %>" class="w-full h-full object-cover">
+                            <% } else { %>
+                                <%= user.name.charAt(0).toUpperCase() %>
+                                    <% } %>
+                    </button>
+                    <!-- Profile Dropdown -->
+                    <div id="profileDropdown"
+                        class="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-[#e2d7ff] py-2 hidden z-[60]">
+                        <div class="px-4 py-2 border-b border-[#e2d7ff] mb-1">
+                            <p class="text-xs text-[#32294f]/50 font-bold uppercase tracking-wider">Profile Management
+                            </p>
+                        </div>
+                        <a href="/teacher/profile"
+                            class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-[#32294f] hover:bg-[#f5eeff] transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">account_circle</span> Profile
+                        </a>
+                        <a href="/auth/logout"
+                            class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-500 hover:bg-red-50 transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">logout</span> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-8">
+
+        <header class="mb-10">
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">Class Analytics</h1>
+            <p class="text-[#32294f]/70 font-medium">Deep dive into your students' performance across all courses.</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Total Courses -->
+            <div
+                class="bg-gradient-to-br from-[#4a40e0] to-[#702ae1] rounded-3xl p-6 text-white shadow-xl shadow-[#4a40e0]/20 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-20">
+                    <span class="material-symbols-outlined text-6xl"
+                        style="font-variation-settings: 'FILL' 1;">import_contacts</span>
+                </div>
+                <h3 class="text-white/80 font-semibold mb-1 relative z-10 text-sm tracking-wider uppercase">Total
+                    Courses</h3>
+                <div class="text-5xl font-extrabold tracking-tight relative z-10">
+                    <%= totalCourses %>
+                </div>
+            </div>
+
+            <!-- Active Students -->
+            <div
+                class="bg-white rounded-3xl p-6 border border-[#e2d7ff] shadow-sm relative overflow-hidden group hover:border-[#9795ff] transition-colors">
+                <div class="absolute top-0 right-0 p-4 text-[#e8deff] group-hover:text-[#dcc9ff] transition-colors">
+                    <span class="material-symbols-outlined text-6xl"
+                        style="font-variation-settings: 'FILL' 1;">groups</span>
+                </div>
+                <h3 class="text-[#32294f]/60 font-semibold mb-1 relative z-10 text-sm tracking-wider uppercase">Active
+                    Students</h3>
+                <div class="text-5xl font-extrabold text-[#4a40e0] tracking-tight relative z-10">
+                    <%= totalStudents %>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Score Distribution (Pie Chart) -->
+            <div class="lg:col-span-5 bg-white rounded-3xl border border-[#e2d7ff] p-6 shadow-sm flex flex-col">
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold">Grade Distribution</h2>
+                    <p class="text-sm text-[#32294f]/60 mt-1">Overall performance spread across all quizzes</p>
+                </div>
+
+                <div class="flex-grow flex items-center justify-center p-4">
+                    <% if (distribution && (distribution.A || distribution.B || distribution.C || distribution.D ||
+                        distribution.F)) { %>
+                        <div class="w-full max-w-[280px]">
+                            <canvas id="distributionChart"></canvas>
+                        </div>
+                        <% } else { %>
+                            <div class="text-center text-[#32294f]/40 py-10">
+                                <span class="material-symbols-outlined text-5xl mb-3 opacity-50">pie_chart</span>
+                                <h6 class="font-bold">No data available</h6>
+                                <p class="text-sm mt-1">Students need to complete quizzes to generate this chart.</p>
+                            </div>
+                            <% } %>
+                </div>
+            </div>
+
+            <!-- Course Averages (Bar Chart) -->
+            <div class="lg:col-span-7 bg-white rounded-3xl border border-[#e2d7ff] p-6 shadow-sm flex flex-col">
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold">Average Score by Course</h2>
+                    <p class="text-sm text-[#32294f]/60 mt-1">Compare performance between different topics</p>
+                </div>
+
+                <div class="flex-grow">
+                    <% if (courseAverages && courseAverages.length> 0) { %>
+                        <div class="w-full h-[300px]">
+                            <canvas id="courseAveragesChart"></canvas>
+                        </div>
+                        <% } else { %>
+                            <div
+                                class="text-center text-[#32294f]/40 py-16 h-full flex flex-col items-center justify-center">
+                                <span class="material-symbols-outlined text-5xl mb-3 opacity-50">bar_chart</span>
+                                <h6 class="font-bold">No data available</h6>
+                                <p class="text-sm mt-1">Students need to complete quizzes to generate this chart.</p>
+                            </div>
+                            <% } %>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Hidden data container for JS -->
+    <div id="analyticsData" class="hidden" data-distribution='<%= JSON.stringify(distribution || {}) %>'
+        data-averages='<%= JSON.stringify(courseAverages || []) %>'>
+    </div>
+
+    <!-- Bottom Navigation -->
+    
+
+    <script>
+        function toggleProfileDropdown() {
+            const d = document.getElementById('profileDropdown');
+            d.classList.toggle('hidden');
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', function (e) {
+            const btn = document.getElementById('profileBtn');
+            const d = document.getElementById('profileDropdown');
+            if (btn && !btn.contains(e.target) && d && !d.contains(e.target)) {
+                d.classList.add('hidden');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Data from server (read safely from data attributes)
+            var dataEl = document.getElementById('analyticsData');
+            var distData = JSON.parse(dataEl.getAttribute('data-distribution') || '{}');
+            var courseData = JSON.parse(dataEl.getAttribute('data-averages') || '[]');
+
+            // Render Pie Chart (Distribution)
+            if (distData.A || distData.B || distData.C || distData.D || distData.F) {
+                const ctxPie = document.getElementById('distributionChart').getContext('2d');
+                new Chart(ctxPie, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['A (90%+)', 'B (80-89%)', 'C (70-79%)', 'D (60-69%)', 'F (<60%)'],
+                        datasets: [{
+                            data: [
+                                parseInt(distData.A || 0),
+                                parseInt(distData.B || 0),
+                                parseInt(distData.C || 0),
+                                parseInt(distData.D || 0),
+                                parseInt(distData.F || 0)
+                            ],
+                            backgroundColor: [
+                                '#10b981', // emerald-500
+                                '#3b82f6', // blue-500
+                                '#0ea5e9', // sky-500
+                                '#f59e0b', // amber-500
+                                '#ef4444'  // red-500
+                            ],
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20,
+                                    font: { family: "'Inter', sans-serif" },
+                                    color: '#32294f'
+                                }
+                            }
+                        },
+                        cutout: '70%'
+                    }
+                });
+            }
+
+            // Render Bar Chart (Course Averages)
+            if (courseData.length > 0) {
+                const ctxBar = document.getElementById('courseAveragesChart').getContext('2d');
+
+                // Sort by score descending
+                courseData.sort(function (a, b) { return b.avg_score - a.avg_score; });
+
+                var labels = courseData.map(function (c) { return c.course_name; });
+                var data = courseData.map(function (c) { return parseInt(c.avg_score); });
+
+                new Chart(ctxBar, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Average Score (%)',
+                            data: data,
+                            backgroundColor: '#4a40e0',
+                            borderRadius: 6,
+                            barThickness: 30
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: { color: '#e2d7ff' },
+                                ticks: { font: { family: "'Inter', sans-serif" }, color: '#32294f' }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { font: { family: "'Inter', sans-serif" }, color: '#32294f' }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

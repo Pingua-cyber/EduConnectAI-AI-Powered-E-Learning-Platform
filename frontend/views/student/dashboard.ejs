@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Student Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#32294f",
+                        "primary-container": "#9795ff",
+                        "surface-container-high": "#e8deff",
+                        "primary-fixed-dim": "#8885ff",
+                        "on-error-container": "#510017",
+                        "secondary-dim": "#6411d5",
+                        "on-tertiary": "#ffefef",
+                        "inverse-surface": "#10062d",
+                        "tertiary-fixed-dim": "#ff7986",
+                        "on-primary": "#f4f1ff",
+                        "outline-variant": "#b2a6d5",
+                        "secondary-fixed": "#dcc9ff",
+                        "tertiary": "#b80438",
+                        "on-tertiary-fixed-variant": "#780021",
+                        "inverse-on-surface": "#a296c4",
+                        "on-surface-variant": "#5f557f",
+                        "secondary-fixed-dim": "#d0b8ff",
+                        "outline": "#7b719c",
+                        "tertiary-dim": "#a20030",
+                        "surface-container-highest": "#e2d7ff",
+                        "tertiary-container": "#ff9099",
+                        "surface": "#faf4ff",
+                        "on-primary-fixed-variant": "#1a0099",
+                        "error-container": "#f74b6d",
+                        "error": "#b41340",
+                        "on-tertiary-fixed": "#39000b",
+                        "background": "#faf4ff",
+                        "on-tertiary-container": "#68001b",
+                        "on-secondary-fixed": "#430097",
+                        "on-secondary-fixed-variant": "#6514d6",
+                        "primary-dim": "#3d30d4",
+                        "primary": "#4a40e0",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#ede4ff",
+                        "secondary-container": "#dcc9ff",
+                        "on-primary-container": "#14007e",
+                        "surface-variant": "#e2d7ff",
+                        "surface-bright": "#faf4ff",
+                        "error-dim": "#a70138",
+                        "on-background": "#32294f",
+                        "secondary": "#702ae1",
+                        "primary-fixed": "#9795ff",
+                        "tertiary-fixed": "#ff9099",
+                        "on-secondary-container": "#5b00c7",
+                        "surface-container-low": "#f5eeff",
+                        "surface-dim": "#dacdff",
+                        "inverse-primary": "#8582ff",
+                        "surface-tint": "#4a40e0",
+                        "on-primary-fixed": "#000000",
+                        "on-error": "#ffefef",
+                        "on-secondary": "#f8f0ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .font-headline {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-surface text-on-surface min-h-screen pb-12">
+    <%- include('../partials/student-sidebar') %>
+    <!-- TopAppBar -->
+    <header class="w-full top-0 px-6 py-4 fixed bg-[#faf4ff]/24 backdrop-blur-xl z-50 transition-colors">
+        <div class="flex justify-between items-center w-full max-w-7xl mx-auto">
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <button onclick="toggleProfileDropdown()"
+                        class="w-10 h-10 rounded-full overflow-hidden bg-primary-container border-2 border-white shadow-sm hover:ring-2 hover:ring-primary transition-all"
+                        id="profileBtn">
+                        <% if (user.profile_image) { %>
+                            <img alt="User profile picture" class="w-full h-full object-cover"
+                                src="<%= user.profile_image %>" />
+                            <% } else { %>
+                                <div
+                                    class="w-full h-full flex items-center justify-center bg-primary text-white font-bold">
+                                    <%= user.name.charAt(0).toUpperCase() %>
+                                </div>
+                                <% } %>
+                    </button>
+                    <!-- Profile Dropdown -->
+                    <div id="profileDropdown"
+                        class="absolute left-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-[#e2d7ff] py-2 hidden z-[60]">
+                        <div class="px-4 py-2 border-b border-[#e2d7ff] mb-1">
+                            <p class="text-[10px] text-[#32294f]/50 font-bold uppercase tracking-wider">Profile
+                                Management</p>
+                        </div>
+                        <a href="/student/profile"
+                            class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-[#32294f] hover:bg-[#f5eeff] transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">account_circle</span> My Profile
+                        </a>
+                        <a href="/auth/logout"
+                            class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-500 hover:bg-red-50 transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">logout</span> Logout
+                        </a>
+                    </div>
+                </div>
+                <h1 class="text-xl font-bold text-[#4a40e0] font-headline">Welcome, <%= user.name %>!</h1>
+            </div>
+            <div class="relative">
+                <button onclick="toggleNotifications()"
+                    class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#f5eeff] transition-colors relative"
+                    id="notifBtn">
+                    <span class="material-symbols-outlined text-primary">notifications</span>
+                    <% if (notifications && notifications.length> 0) { %>
+                        <span
+                            class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
+                        <% } %>
+                </button>
+                <!-- Notifications Dropdown -->
+                <div id="notifDropdown"
+                    class="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-[#e2d7ff] py-4 hidden z-[60]">
+                    <div class="px-4 pb-3 border-b border-[#e2d7ff] flex justify-between items-center">
+                        <h4 class="text-sm font-black text-[#32294f] font-headline uppercase tracking-wider">
+                            Notifications</h4>
+                        <% if (notifications && notifications.length> 0) { %>
+                            <button onclick="markAllRead()"
+                                class="text-[10px] font-bold text-primary hover:underline">Mark all as read</button>
+                            <% } %>
+                    </div>
+                    <div class="max-h-96 overflow-y-auto no-scrollbar">
+                        <% if (notifications && notifications.length> 0) { %>
+                            <% notifications.forEach(function(n) { 
+                                let notifLink = '/student/dashboard';
+                                if (n.type === 'quiz' || n.type === 'subject') {
+                                    notifLink = '/student/courses';
+                                } else if (n.type === 'info' || n.type === 'success' || n.title.includes('Assignment')) {
+                                    notifLink = '/student/assignments';
+                                }
+                            %>
+                                <a href="<%= notifLink %>"
+                                    class="block px-4 py-4 border-b border-[#f5eeff] last:border-0 hover:bg-[#faf4ff] transition-colors cursor-pointer group">
+                                    <div class="flex gap-3">
+                                        <div
+                                            class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center <%= n.type === 'quiz' ? 'bg-error-container/20 text-error' : 'bg-primary-container/20 text-primary' %>">
+                                            <span class="material-symbols-outlined text-lg">
+                                                <%= n.type === 'quiz' ? 'quiz' : 'notifications_active' %>
+                                            </span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p
+                                                class="text-[11px] font-black text-[#32294f] mb-0.5 group-hover:text-primary transition-colors">
+                                                <%= n.title %>
+                                            </p>
+                                            <p class="text-[10px] font-medium text-[#5f557f] leading-tight">
+                                                <%= n.message %>
+                                            </p>
+                                            <p
+                                                class="text-[9px] font-bold text-[#5f557f]/40 uppercase mt-2 tracking-tighter">
+                                                <%= n.created_at ? new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recently' %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </a>
+                                <% }) %>
+                                    <% } else { %>
+                                        <div class="py-12 flex flex-col items-center justify-center opacity-40">
+                                            <span
+                                                class="material-symbols-outlined text-4xl mb-2">notifications_off</span>
+                                            <p class="text-[10px] font-bold uppercase tracking-widest">No new notices
+                                            </p>
+                                        </div>
+                                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <script>
+        function toggleProfileDropdown() {
+            document.getElementById('profileDropdown').classList.toggle('hidden');
+            document.getElementById('notifDropdown').classList.add('hidden');
+        }
+        function toggleNotifications() {
+            document.getElementById('notifDropdown').classList.toggle('hidden');
+            document.getElementById('profileDropdown').classList.add('hidden');
+        }
+        async function markAllRead() {
+            try {
+                const res = await fetch('/student/notifications/mark-read', { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    location.reload();
+                }
+            } catch (err) {
+                console.error("Error marking as read:", err);
+            }
+        }
+        window.addEventListener('click', function(e) {
+            const profileBtn = document.getElementById('profileBtn');
+            const profileDropdown = document.getElementById('profileDropdown');
+            const notifBtn = document.getElementById('notifBtn');
+            const notifDropdown = document.getElementById('notifDropdown');
+
+            if (profileBtn && !profileBtn.contains(e.target) && profileDropdown && !profileDropdown.contains(e.target)) {
+                profileDropdown.classList.add('hidden');
+            }
+            if (notifBtn && !notifBtn.contains(e.target) && notifDropdown && !notifDropdown.contains(e.target)) {
+                notifDropdown.classList.add('hidden');
+            }
+        });
+
+        async function removeSubject(subjectId, subjectName) {
+            if (!confirm(`Hide "${subjectName}" from your explorer? You can still access it via direct search or courses if you have already started.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/student/subject/${subjectId}/remove`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    // Smoothly remove the card and reload for stats
+                    const card = document.getElementById(`subject-card-${subjectId}`);
+                    if (card) {
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.9)';
+                        setTimeout(function() { window.location.reload(); }, 300);
+                    } else {
+                        window.location.reload();
+                    }
+                } else {
+                    alert(result.error || "Failed to remove subject");
+                }
+            } catch (err) {
+                console.error("Error removing subject:", err);
+                alert("An error occurred while removing the subject.");
+            }
+        }
+    </script>
+    <main class="pt-24 px-6 pb-12 max-w-7xl mx-auto">
+        <!-- Top Summary Row: Deadlines & Skill Badges -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10 items-stretch">
+            <!-- Assignment Deadlines (Now at the top) -->
+            <section
+                class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-[#e2d7ff]/30 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-error-container/20 text-error flex items-center justify-center">
+                            <span class="material-symbols-outlined"
+                                style="font-variation-settings: 'FILL' 1;">event_upcoming</span>
+                        </div>
+                        <h3 class="text-xl font-black font-headline text-[#1a1c1e]">Deadlines</h3>
+                    </div>
+
+                    <div class="space-y-4 mb-6">
+                        <% if (deadlines && deadlines.length> 0) { %>
+                            <% deadlines.forEach(function(d) { %>
+                                <div onclick="location.href='/student/assignments'"
+                                    class="group flex items-center gap-4 p-4 rounded-2xl bg-[#faf4ff] hover:bg-error-container/10 transition-all cursor-pointer border border-[#e2d7ff]/30">
+                                    <div class="flex-1">
+                                        <h4
+                                            class="font-bold text-sm text-[#32294f] group-hover:text-error transition-colors truncate">
+                                            <%= d.title %>
+                                        </h4>
+                                        <p class="text-[10px] font-bold text-[#5f557f] uppercase tracking-wider mt-0.5">
+                                            <%= d.subject_name %>
+                                        </p>
+                                    </div>
+                                    <% 
+                                        var daysLeft = Math.ceil((new Date(d.deadline) - new Date()) / (1000 * 60 * 60 * 24)); 
+                                        var badgeColor = daysLeft <= 1 ? 'bg-error text-white' : 'bg-primary-container/20 text-primary'; 
+                                        var badgeText = daysLeft <= 1 ? 'Due Soon' : daysLeft + ' Days Left'; 
+                                    %>
+                                        <span
+                                            class="px-3 py-1 rounded-full <%= badgeColor %> text-[9px] font-black uppercase tracking-tighter whitespace-nowrap">
+                                            <%= badgeText %>
+                                        </span>
+                                </div>
+                                <% }) %>
+                                    <% } else { %>
+                                        <div class="py-8 text-center opacity-40">
+                                            <span class="material-symbols-outlined text-3xl mb-2">done_all</span>
+                                            <p class="text-[10px] font-bold uppercase tracking-widest">No pending tasks
+                                            </p>
+                                        </div>
+                                        <% } %>
+                    </div>
+                </div>
+
+                <a href="/student/assignments"
+                    class="w-full block py-4 text-xs text-center font-black text-primary border-2 border-primary/10 rounded-2xl hover:bg-primary hover:text-white transition-all tracking-widest uppercase">
+                    Manage Tasks
+                </a>
+            </section>
+
+            <!-- Achievement Badges (Now at the top) -->
+            <section
+                class="lg:col-span-2 bg-[#10062d] rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden flex flex-col md:flex-row gap-8">
+                <div class="absolute top-0 right-0 w-40 h-40 bg-primary/10 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+
+                <div class="flex-1 space-y-6">
+                    <div class="flex items-center gap-3 border-b border-white/10 pb-4">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-white/10 text-primary-container flex items-center justify-center">
+                            <span class="material-symbols-outlined"
+                                style="font-variation-settings: 'FILL' 1;">stars</span>
+                        </div>
+                        <h3 class="text-xl font-black font-headline">Skill Badges</h3>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        <% if (typeof badges !=='undefined' && badges && badges.length> 0) { %>
+                            <% badges.forEach(function(badge) { %>
+                                <div
+                                    class="bg-white/5 border border-white/10 rounded-3xl p-4 flex flex-col items-center text-center group hover:bg-white/10 transition-all cursor-default">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                        <span class="material-symbols-outlined <%= badge.color %> text-xl"
+                                            style="font-variation-settings: 'FILL' 1;">
+                                            <%= badge.icon %>
+                                        </span>
+                                    </div>
+                                    <p class="text-[9px] font-black uppercase tracking-widest truncate w-full">
+                                        <%= badge.name %>
+                                    </p>
+                                </div>
+                                <% }) %>
+                                    <% } else { %>
+                                        <div class="col-span-full text-center py-6 opacity-40">
+                                            <p class="text-[10px] font-bold uppercase tracking-widest">No badges yet</p>
+                                        </div>
+                                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Vertical Performance Split -->
+                <div
+                    class="w-full md:w-64 border-t md:border-t-0 md:border-l border-white/10 pt-6 md:pt-0 md:pl-8 flex flex-col justify-between">
+                    <div>
+                        <h4 class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-4">Recent
+                            Performance</h4>
+                        <div class="space-y-4">
+                            <% if (typeof scores !=='undefined' && scores && scores.length> 0) { %>
+                                <% scores.slice(0, 3).forEach(function(s) { %>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3 overflow-hidden">
+                                            <div
+                                                class="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
+                                                <span
+                                                    class="material-symbols-outlined text-primary-container text-[14px]">quiz</span>
+                                            </div>
+                                            <p class="text-[11px] font-bold truncate">
+                                                <%= s.quiz_title %>
+                                            </p>
+                                        </div>
+                                        <span
+                                            class="text-[11px] font-black <%= s.score >= 80 ? 'text-green-400' : (s.score >= 50 ? 'text-yellow-400' : 'text-red-400') %>">
+                                            <%= s.score %>%
+                                        </span>
+                                    </div>
+                                    <% }) %>
+                                        <% } %>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex items-center gap-2">
+                        <div class="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                            <div class="h-full bg-primary-container w-[<%= averageScore || 0 %>%]">
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-black">
+                            <%= averageScore %>%
+                        </span>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="space-y-12">
+            <!-- Progress Banner -->
+            <section
+                class="relative overflow-hidden rounded-[3rem] bg-gradient-to-br from-[#4a40e0] to-[#702ae1] p-10 md:p-14 text-white shadow-2xl shadow-primary/30">
+                <div class="relative z-10 flex flex-col xl:flex-row justify-between items-center gap-10">
+                    <div class="space-y-6 text-center xl:text-left">
+                        <div class="flex items-center gap-3 justify-center xl:justify-start">
+                            <span
+                                class="inline-block px-4 py-1 rounded-full bg-white/20 text-[10px] font-bold uppercase tracking-[0.2em] backdrop-blur-md">Academic
+                                Progress</span>
+                            <div class="flex items-center gap-1 text-yellow-300">
+                                <span class="material-symbols-outlined text-[18px]"
+                                    style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+                                <span class="text-xs font-black">
+                                    <%= studyStreak %> Day Streak
+                                </span>
+                            </div>
+                        </div>
+                        <h2
+                            class="text-4xl md:text-6xl font-extrabold font-headline leading-tight tracking-tight max-w-2xl">
+                            <%= averageScore >= 80 ? "You're at the top of your game!" : (averageScore >= 50 ? "Making Great Progress!" : "Keep Pushing Higher!") %>
+                        </h2>
+                        <p class="text-lg text-white/80 font-medium max-w-xl">
+                            Your current average score is <span class="text-white font-bold">
+                                <%= averageScore %>%
+                            </span>. <%= averageScore >= 80 ? "Keep maintaining this excellence!" : "Focus on your weaker areas to hit that 80% mark." %>
+                        </p>
+                    </div>
+                    <div class="relative w-48 h-48 flex-shrink-0">
+                        <svg class="w-full h-full transform -rotate-90 filter drop-shadow-2xl">
+                            <circle class="text-white/10" cx="96" cy="96" fill="transparent" r="88"
+                                stroke="currentColor" stroke-width="14"></circle>
+                            <circle class="text-white" cx="96" cy="96" fill="transparent" r="88" stroke="currentColor"
+                                stroke-dasharray="553"
+                                stroke-dashoffset="<%= 553 - (553 * (averageScore || 0) / 100) %>" stroke-width="14"
+                                stroke-linecap="round"></circle>
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span class="text-4xl font-black font-headline text-white">
+                                <%= averageScore %>%
+                            </span>
+                            <span class="text-[10px] font-bold uppercase tracking-widest opacity-60">Avg Score</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Decor -->
+                <div class="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-[100px]"></div>
+                <div class="absolute -bottom-12 -left-12 w-48 h-48 bg-primary-container/20 rounded-full blur-[80px]">
+                </div>
+            </section>
+
+            <!-- Insights & Recommendations Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- AI Insights Card -->
+                <section
+                    class="bg-white rounded-[2.5rem] p-8 border border-primary/10 shadow-xl shadow-primary/5 relative overflow-hidden group">
+                    <div
+                        class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-150 duration-700">
+                    </div>
+                    <div class="flex flex-col md:flex-row items-center gap-6 relative z-10">
+                        <div
+                            class="w-16 h-16 rounded-3xl bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                            <span class="material-symbols-outlined text-3xl animate-pulse">psychology</span>
+                        </div>
+                        <div class="flex-1 text-center md:text-left">
+                            <h3
+                                class="text-lg font-black font-headline text-on-surface flex items-center gap-2 justify-center md:justify-start">
+                                Lumina AI Insights
+                                <span
+                                    class="px-2 py-0.5 rounded-md bg-primary text-[8px] text-white uppercase tracking-tighter">Live</span>
+                            </h3>
+                            <p class="text-sm font-bold text-primary mt-1">
+                                <%= aiInsight.title %>
+                            </p>
+                            <p class="text-xs text-on-surface/60 font-medium mt-1 leading-relaxed">
+                                <%= aiInsight.message %>
+                            </p>
+                        </div>
+                        <a href="/student/ai-tutor"
+                            class="px-6 py-3 bg-primary text-white rounded-2xl font-bold text-xs hover:scale-105 transition-transform shadow-lg shadow-primary/20">Ask
+                            AI</a>
+                    </div>
+                </section>
+
+                <!-- Learning Recommendations -->
+                <section
+                    class="bg-[#f5eeff] rounded-[2.5rem] p-8 flex items-center justify-between gap-6 border border-primary/5">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-black font-headline text-on-surface">Curated for You</h3>
+                        <div class="grid grid-cols-2 gap-4 mt-4">
+                            <div class="flex items-center gap-3 bg-white/60 p-3 rounded-2xl border border-primary/5">
+                                <span class="material-symbols-outlined text-primary text-sm">bolt</span>
+                                <p class="text-[10px] font-black text-on-surface">Quick Review</p>
+                            </div>
+                            <div class="flex items-center gap-3 bg-white/60 p-3 rounded-2xl border border-primary/5">
+                                <span class="material-symbols-outlined text-secondary text-sm">trending_up</span>
+                                <p class="text-[10px] font-black text-on-surface">Up Next</p>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="/student/courses"
+                        class="w-12 h-12 rounded-full bg-white text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all shadow-sm">
+                        <span class="material-symbols-outlined">explore</span>
+                    </a>
+                </section>
+            </div>
+
+            <!-- Explore Subjects -->
+            <section class="space-y-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-3xl font-black font-headline text-[#1a1c1e]">Explore Subjects</h3>
+                        <p class="text-[#5f557f] font-medium">Browse available learning tracks and materials</p>
+                    </div>
+                    <a href="/student/courses"
+                        class="px-6 py-3 rounded-2xl bg-white text-primary border border-primary/10 font-bold text-sm hover:bg-primary hover:text-white transition-all shadow-sm">
+                        View All
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="subjectGrid">
+                    <% if (typeof subjects !=='undefined' && subjects && subjects.length> 0) { %>
+                        <% subjects.forEach(function(subject, index) { %>
+                            <div class="group bg-white rounded-[2.5rem] p-6 shadow-sm border border-[#e2d7ff]/30 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative"
+                                id="subject-card-<%= subject.id %>">
+                                <button onclick="removeSubject('<%= subject.id %>', '<%= subject.name %>')"
+                                    class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/80 backdrop-blur-md text-red-500 opacity-0 group-hover:opacity-100 transition-opacity z-20 flex items-center justify-center hover:bg-red-500 hover:text-white shadow-sm">
+                                    <span class="material-symbols-outlined text-[18px]">close</span>
+                                </button>
+
+                                <div class="relative h-40 rounded-[2rem] overflow-hidden mb-6">
+                                    <div
+                                        class="w-full h-full bg-gradient-to-br <%= (index % 2 === 0) ? 'from-primary to-secondary' : 'from-secondary to-primary' %> opacity-90 flex items-center justify-center group-hover:scale-110 transition-transform duration-700">
+                                        <span class="material-symbols-outlined text-5xl text-white">school</span>
+                                    </div>
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                                    <div class="absolute bottom-4 left-4">
+                                        <span
+                                            class="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-[9px] font-bold uppercase tracking-widest">Track</span>
+                                    </div>
+                                </div>
+
+                                <h4
+                                    class="text-lg font-black text-[#1a1c1e] mb-2 group-hover:text-primary transition-colors">
+                                    <%= subject.name %>
+                                </h4>
+                                <p class="text-xs text-[#5f557f] mb-6 font-medium">Prof. <%= subject.teacher_name
+                                        || 'Tutor' %>
+                                </p>
+
+                                <div class="flex items-center justify-between border-t border-[#f5eeff] pt-4">
+                                    <div class="flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-primary text-lg">menu_book</span>
+                                        <span class="text-[10px] font-bold text-[#32294f]/60 uppercase tracking-widest">
+                                            <%= subject.course_count || 0 %> Courses
+                                        </span>
+                                    </div>
+                                    <a href="/student/subject/<%= subject.id %>"
+                                        class="w-10 h-10 rounded-xl bg-[#f5eeff] text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                                        <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <% }) %>
+                                <% } else { %>
+                                    <div
+                                        class="col-span-full py-20 text-center bg-white rounded-[3rem] border border-dashed border-[#e2d7ff]">
+                                        <span
+                                            class="material-symbols-outlined text-5xl text-[#e2d7ff] mb-4">search_off</span>
+                                        <p class="text-[#5f557f] font-bold">No subjects found matching your track.</p>
+                                    </div>
+                                    <% } %>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <!-- Lumina AI FAB -->
+    <a href="/student/ai-tutor" class="fixed bottom-24 right-6 group flex items-center gap-3 z-40">
+        <div
+            class="bg-white px-4 py-2 rounded-2xl shadow-lg border border-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+            <span class="text-primary font-bold text-sm">Lumina AI</span>
+        </div>
+        <div
+            class="w-14 h-14 bg-gradient-to-br from-primary to-secondary text-white rounded-full shadow-xl flex items-center justify-center transform active:scale-95 hover:scale-110 transition-all duration-300 animate-bounce">
+            <span class="material-symbols-outlined text-3xl">smart_toy</span>
+        </div>
+    </a>
+</body>
+
+</html>

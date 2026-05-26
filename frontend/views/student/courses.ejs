@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lumina Academic - Explore Courses</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#000000",
+                        "error": "#b41340",
+                        "on-surface": "#32294f",
+                        "secondary-fixed-dim": "#d0b8ff",
+                        "outline-variant": "#b2a6d5",
+                        "on-primary-container": "#14007e",
+                        "outline": "#7b719c",
+                        "primary": "#4a40e0",
+                        "on-primary-fixed-variant": "#1a0099",
+                        "on-tertiary-fixed": "#39000b",
+                        "surface-bright": "#faf4ff",
+                        "on-surface-variant": "#5f557f",
+                        "tertiary-container": "#ff9099",
+                        "surface-container-high": "#e8deff",
+                        "on-tertiary-fixed-variant": "#780021",
+                        "surface-container-low": "#f5eeff",
+                        "surface-container": "#ede4ff",
+                        "inverse-on-surface": "#a296c4",
+                        "surface-tint": "#4a40e0",
+                        "on-error": "#ffefef",
+                        "on-secondary-fixed-variant": "#6514d6",
+                        "on-secondary-fixed": "#430097",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#10062d",
+                        "surface-dim": "#dacdff",
+                        "surface-container-highest": "#e2d7ff",
+                        "on-tertiary-container": "#68001b",
+                        "primary-fixed-dim": "#8885ff",
+                        "on-background": "#32294f",
+                        "tertiary-fixed-dim": "#ff7986",
+                        "on-tertiary": "#ffefef",
+                        "tertiary-fixed": "#ff9099",
+                        "tertiary": "#b80438",
+                        "error-dim": "#a70138",
+                        "on-secondary-container": "#5b00c7",
+                        "background": "#faf4ff",
+                        "inverse-primary": "#8582ff",
+                        "error-container": "#f74b6d",
+                        "surface": "#faf4ff",
+                        "secondary-container": "#dcc9ff",
+                        "on-error-container": "#510017",
+                        "primary-fixed": "#9795ff",
+                        "tertiary-dim": "#a20030",
+                        "primary-container": "#9795ff",
+                        "secondary-fixed": "#dcc9ff",
+                        "secondary": "#702ae1",
+                        "primary-dim": "#3d30d4",
+                        "surface-variant": "#e2d7ff",
+                        "on-secondary": "#f8f0ff",
+                        "on-primary": "#f4f1ff",
+                        "secondary-dim": "#6411d5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf4ff; }
+        .font-headline { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased min-h-screen pb-12">
+    <%- include('../partials/student-sidebar') %>
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-40 bg-[#faf4ff] dark:bg-[#10062d] bg-gradient-to-b from-[#f5eeff] to-transparent">
+<div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
+<div class="flex items-center gap-4">
+<h1 class="font-['Plus_Jakarta_Sans'] font-bold text-2xl text-[#4a40e0] dark:text-[#9795ff] tracking-tight">Explore Courses</h1>
+</div>
+                <div class="relative">
+                    <button onclick="toggleProfileDropdown()" class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container shadow-sm hover:scale-105 transition-transform">
+                        <% if (user.profile_image) { %>
+                            <img alt="User profile picture" class="w-full h-full object-cover" src="<%= user.profile_image %>"/>
+                        <% } else { %>
+                            <div class="w-full h-full flex items-center justify-center bg-primary text-white font-bold">
+                                <%= user.name.charAt(0).toUpperCase() %>
+                            </div>
+                        <% } %>
+                    </button>
+
+                    <!-- Profile Dropdown -->
+                    <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-[#e2d7ff] py-2 hidden z-[60]">
+                        <div class="px-4 py-2 border-b border-[#e2d7ff] mb-1">
+                            <p class="text-[10px] text-[#32294f]/50 font-bold uppercase tracking-wider">Account Settings</p>
+                        </div>
+                        <a href="/student/profile" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-[#32294f] hover:bg-[#f5eeff] transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">account_circle</span> My Profile
+                        </a>
+                        <a href="/auth/logout" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-500 hover:bg-red-50 transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">logout</span> Logout
+                        </a>
+                    </div>
+                </div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 pt-2">
+<!-- Search Bar Section -->
+<section class="mb-8">
+<div class="relative group">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input id="courseSearch" class="w-full bg-surface-container-lowest border-none rounded-2xl py-5 pl-12 pr-4 text-on-surface placeholder:text-outline-variant focus:ring-2 focus:ring-primary/20 transition-all shadow-[0_20px_40px_rgba(50,41,79,0.04)]" placeholder="Search for skills, topics, or mentors..." type="text" onkeyup="filterCourses()"/>
+<button class="absolute inset-y-2 right-2 px-6 bg-gradient-to-br from-primary to-secondary text-on-primary font-semibold rounded-xl text-sm transition-transform active:scale-95">
+                    Search
+                </button>
+</div>
+</section>
+<!-- Category Filters -->
+<section class="mb-10 -mx-6 px-6 overflow-hidden">
+<div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2" id="categoryFilters">
+<button onclick="setCategory('All', this)" class="category-btn whitespace-nowrap px-6 py-2.5 bg-primary text-white rounded-full font-semibold text-sm shadow-lg shadow-primary/20">All Courses</button>
+<button onclick="setCategory('Technology', this)" class="category-btn whitespace-nowrap px-6 py-2.5 bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full font-semibold text-sm">Technology</button>
+<button onclick="setCategory('Science', this)" class="category-btn whitespace-nowrap px-6 py-2.5 bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full font-semibold text-sm">Science</button>
+<button onclick="setCategory('Mathematics', this)" class="category-btn whitespace-nowrap px-6 py-2.5 bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full font-semibold text-sm">Mathematics</button>
+<button onclick="setCategory('Humanities', this)" class="category-btn whitespace-nowrap px-6 py-2.5 bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full font-semibold text-sm">Humanities</button>
+<button onclick="setCategory('Business', this)" class="category-btn whitespace-nowrap px-6 py-2.5 bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full font-semibold text-sm">Business</button>
+<button onclick="setCategory('Design', this)" class="category-btn whitespace-nowrap px-6 py-2.5 bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full font-semibold text-sm">Design</button>
+</div>
+</section>
+<!-- Featured Section (Bento Style Layout) -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
+<!-- Hero Card -->
+<div class="md:col-span-8 bg-inverse-surface rounded-[2rem] p-8 relative overflow-hidden flex flex-col justify-end min-h-[400px] text-white group cursor-pointer shadow-2xl">
+<div class="absolute inset-0 z-0">
+<img alt="Quantum Mechanics" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" data-alt="abstract visualization of quantum particles and wave functions with vibrant purple and neon blue light trails" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDw0saA_-1rXNvsIZVkV0g6JLg6KnA4wrHGPFrN4BWuFi-opcTSsEkFBEGATtu0PEyzWf1wD8qnnPgeBvEyJHWFyquJk-N7uXN4xTck8hNxpVf7WTz4OdyaE4AoWTcQlJEFeWSKIALoj8Act0bEZGOMLFrlbwxQgEVUpB2d5yW4yIWWCBi6Zeuc82wU9HayHjvr2RsasEjeC4A5wZOWUCWKNwVPxPhrPbCVcsG3weOB2XHL2uaaYcPOkmnZAeDSd5g8ivkKqyPpxyrJ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface via-inverse-surface/40 to-transparent"></div>
+</div>
+<div class="relative z-10">
+<span class="bg-primary-container text-on-primary-container px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-4 inline-block">Popular Now</span>
+<h2 class="text-4xl font-headline font-extrabold mb-3 leading-tight">Advanced Quantum Mechanics</h2>
+<p class="text-inverse-on-surface max-w-lg mb-6 text-lg">Master the intricacies of wave-particle duality and Schrödinger equations with Dr. Elena Vance.</p>
+<div class="flex items-center gap-4">
+<button class="bg-primary px-8 py-3 rounded-full font-bold text-sm shadow-xl shadow-primary/40 hover:translate-y-[-2px] transition-all">Continue Learning</button>
+<span class="text-sm font-semibold flex items-center gap-1"><span class="material-symbols-outlined text-sm">timer</span> 12h 45m left</span>
+</div>
+</div>
+</div>
+<!-- Stats Card -->
+<div class="md:col-span-4 bg-surface-container-highest rounded-[2rem] p-8 flex flex-col justify-between shadow-[0_20px_40px_rgba(50,41,79,0.06)]">
+<div>
+<h3 class="text-2xl font-headline font-bold text-on-surface mb-2">Learning Progress</h3>
+<p class="text-on-surface-variant text-sm">You have completed 4 courses this month. Keep it up!</p>
+</div>
+<div class="space-y-6">
+<div class="flex justify-center">
+<!-- Circular Progress Simulation -->
+<div class="relative w-32 h-32 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-dasharray="364.4" stroke-dashoffset="91" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<span class="absolute text-3xl font-headline font-black text-primary">75%</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-2xl flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-weight="fill">emoji_events</span>
+</div>
+<div>
+<p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Next Milestone</p>
+<p class="text-sm font-bold text-on-surface">Data Science Pro</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Course Grid -->
+<h2 class="text-2xl font-headline font-extrabold text-on-surface mb-8">Available Courses</h2>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="courseGrid">
+  <% if (typeof courses !== 'undefined' && courses && courses.length > 0) { %>
+    <% courses.forEach(course => { %>
+      <div class="course-card bg-surface-container-lowest rounded-[2rem] overflow-hidden group hover:translate-y-[-8px] transition-all duration-300 shadow-[0_10px_30px_rgba(50,41,79,0.03)] hover:shadow-2xl flex flex-col" data-title="<%= course.title.toLowerCase() %>" data-description="<%= (course.description || '').toLowerCase() %>">
+        <div class="h-48 overflow-hidden relative">
+          <div class="w-full h-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+             <span class="material-symbols-outlined text-6xl text-white opacity-90">menu_book</span>
+          </div>
+          <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black uppercase text-primary tracking-widest">Available</div>
+        </div>
+        <div class="p-6 flex flex-col flex-grow justify-between">
+          <div>
+            <h3 class="text-lg font-headline font-bold text-on-surface mb-2 leading-snug"><%= course.title %></h3>
+            <p class="text-xs text-on-surface-variant mb-4 line-clamp-3" title="<%= course.description || 'No description provided' %>"><%= course.description || 'No description provided' %></p>
+          </div>
+          <div class="flex gap-3 mt-auto">
+            <a href="/student/course/<%= course.id %>" class="flex-1 block bg-primary/10 text-primary text-center py-3 rounded-xl font-bold hover:bg-primary hover:text-white transition-colors">View Details</a>
+            <button onclick="removeCourse('<%= course.id %>', '<%= course.title %>')" class="w-12 h-12 flex items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm">
+                <span class="material-symbols-outlined">delete</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <div class="col-span-full py-12 text-center text-on-surface-variant font-bold">No courses available at the moment.</div>
+  <% } %>
+</div>
+
+<script>
+    let currentCategory = 'All';
+
+    function toggleProfileDropdown() {
+        const dropdown = document.getElementById('profileDropdown');
+        dropdown.classList.toggle('hidden');
+    }
+
+
+
+    function setCategory(cat, btn) {
+        currentCategory = cat;
+        // Update button styles
+        document.querySelectorAll('.category-btn').forEach(b => {
+            b.classList.remove('bg-primary', 'text-white', 'shadow-lg', 'shadow-primary/20');
+            b.classList.add('bg-surface-container-highest', 'text-on-surface-variant');
+        });
+        btn.classList.add('bg-primary', 'text-white', 'shadow-lg', 'shadow-primary/20');
+        btn.classList.remove('bg-surface-container-highest', 'text-on-surface-variant');
+        
+        filterCourses();
+    }
+
+    async function removeCourse(courseId, courseTitle) {
+        if (!confirm(`Hide "${courseTitle}" from your view? Your progress will be preserved, but it will no longer appear on your dashboard.`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/student/course/${courseId}/remove`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                window.location.reload();
+            } else {
+                alert(result.error || "Failed to remove course");
+            }
+        } catch (err) {
+            console.error("Error removing course:", err);
+            alert("An error occurred while removing the course.");
+        }
+    }
+
+    function filterCourses() {
+        const query = document.getElementById('courseSearch').value.toLowerCase();
+        const cards = document.querySelectorAll('.course-card');
+        let count = 0;
+
+        cards.forEach(card => {
+            const title = card.dataset.title;
+            const desc = card.dataset.description;
+            const matchesQuery = title.includes(query) || desc.includes(query);
+            
+            let matchesCategory = currentCategory === 'All';
+            if (!matchesCategory) {
+                const catKeywords = {
+                    'Technology': ['computer', 'network', 'tech', 'software', 'programming', 'ai', 'data'],
+                    'Science': ['physics', 'chemistry', 'biology', 'quantum', 'sociology', 'science'],
+                    'Mathematics': ['math', 'calculus', 'algebra', 'analysis'],
+                    'Humanities': ['sociology', 'history', 'art', 'philosophy', 'humanities'],
+                    'Business': ['management', 'business', 'marketing', 'finance', 'economics'],
+                    'Design': ['design', 'ui', 'ux', 'creative', 'graphics']
+                };
+                const keywords = catKeywords[currentCategory] || [];
+                matchesCategory = keywords.some(k => title.includes(k) || desc.includes(k));
+            }
+
+            if (matchesQuery && matchesCategory) {
+                card.classList.remove('hidden');
+                count++;
+            } else {
+                card.classList.add('hidden');
+            }
+        });
+
+        const grid = document.getElementById('courseGrid');
+        let emptyState = document.getElementById('emptyState');
+        if (count === 0) {
+            if (!emptyState) {
+                emptyState = document.createElement('div');
+                emptyState.id = 'emptyState';
+                emptyState.className = 'col-span-full py-20 text-center opacity-40';
+                emptyState.innerHTML = `
+                    <span class="material-symbols-outlined text-6xl mb-4">search_off</span>
+                    <p class="text-xl font-bold font-headline">No courses found</p>
+                    <p class="text-sm">Try adjusting your filters or search query</p>
+                `;
+                grid.appendChild(emptyState);
+            }
+        } else if (emptyState) {
+            emptyState.remove();
+        }
+    }
+</script>
+</main>
+
+
+</body></html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Assignments - EduConnect AI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf4ff; }
+        h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="text-[#32294f] pb-12">
+    <%- include('../partials/student-sidebar') %>
+
+    <!-- Top Navigation -->
+    <nav class="sticky top-0 z-50 bg-[#faf4ff]/80 backdrop-blur-xl border-b border-[#e2d7ff]/50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="/student/dashboard" class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4a40e0] to-[#702ae1] flex items-center justify-center text-white font-bold shadow-lg">
+                    <span class="material-symbols-outlined text-xl">school</span>
+                </a>
+                <span class="font-['Plus_Jakarta_Sans'] font-extrabold text-xl tracking-tight">My <span class="text-[#4a40e0]">Assignments</span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <header class="mb-10">
+            <h1 class="text-3xl font-extrabold tracking-tight mb-2">Academic Assignments</h1>
+            <p class="text-[#32294f]/70 font-medium">Download materials and submit your work before the deadline.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <% assignments.forEach(assignment => { %>
+                <div class="bg-white rounded-[2.5rem] border border-[#e2d7ff] p-8 shadow-sm group hover:border-[#4a40e0] transition-all relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4">
+                        <% if (assignment.status === 'graded') { %>
+                            <span class="bg-green-100 text-green-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider">Graded</span>
+                        <% } else if (assignment.status === 'submitted' || assignment.status === 'late') { %>
+                            <span class="bg-blue-100 text-blue-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider">Submitted</span>
+                        <% } else { %>
+                            <span class="bg-orange-100 text-orange-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider">Pending</span>
+                        <% } %>
+                    </div>
+
+                    <div class="mb-6">
+                        <p class="text-xs font-black text-[#4a40e0] uppercase tracking-[0.2em] mb-2"><%= assignment.subject_name %></p>
+                        <h3 class="text-2xl font-extrabold mb-2"><%= assignment.title %></h3>
+                        <p class="text-sm text-[#32294f]/60 leading-relaxed line-clamp-2"><%= assignment.description || 'No description provided.' %></p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="bg-[#faf4ff] p-4 rounded-2xl border border-[#e2d7ff]/50">
+                            <p class="text-[10px] font-black text-[#32294f]/40 uppercase tracking-wider mb-1">Deadline</p>
+                            <p class="font-bold text-sm <%= new Date(assignment.deadline) < new Date() ? 'text-red-500' : 'text-[#32294f]' %>">
+                                <%= new Date(assignment.deadline).toLocaleDateString() %>
+                            </p>
+                        </div>
+                        <div class="bg-[#faf4ff] p-4 rounded-2xl border border-[#e2d7ff]/50 text-right">
+                            <p class="text-[10px] font-black text-[#32294f]/40 uppercase tracking-wider mb-1">Your Grade</p>
+                            <p class="font-black text-xl <%= assignment.marks ? 'text-[#4a40e0]' : 'text-[#32294f]/20' %>">
+                                <%= assignment.marks !== null ? assignment.marks + '%' : '--' %>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <% if (assignment.file_path) { %>
+                            <a href="<%= assignment.file_path %>" target="_blank" class="flex-1 flex items-center justify-center gap-2 bg-[#f5eeff] text-[#4a40e0] py-4 rounded-2xl font-bold hover:bg-[#e8deff] transition-colors border border-[#e2d7ff]">
+                                <span class="material-symbols-outlined">download</span>
+                                Download Material
+                            </a>
+                        <% } %>
+                        
+                        <button onclick="openSubmitModal('<%= assignment.id %>', '<%= assignment.title %>')" class="flex-1 flex items-center justify-center gap-2 bg-[#4a40e0] text-white py-4 rounded-2xl font-bold hover:bg-[#3d30d4] transition-colors shadow-lg shadow-[#4a40e0]/20">
+                            <span class="material-symbols-outlined"><%= assignment.status ? 'publish' : 'add_task' %></span>
+                            <%= assignment.status ? 'Resubmit' : 'Submit Now' %>
+                        </button>
+                    </div>
+
+                    <% if (assignment.feedback) { %>
+                        <div class="mt-6 p-4 bg-yellow-50 rounded-2xl border border-yellow-100">
+                            <p class="text-[10px] font-black text-yellow-600 uppercase tracking-wider mb-1 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[14px]">feedback</span> Teacher Feedback
+                            </p>
+                            <p class="text-sm italic text-yellow-800"><%= assignment.feedback %></p>
+                        </div>
+                    <% } %>
+                </div>
+            <% }) %>
+
+            <% if (assignments.length === 0) { %>
+                <div class="col-span-full bg-white rounded-3xl border-2 border-dashed border-[#e2d7ff] p-20 text-center">
+                    <span class="material-symbols-outlined text-6xl text-[#e2d7ff] mb-4">task</span>
+                    <p class="text-[#32294f]/50 font-bold text-lg">No assignments posted yet.</p>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <!-- Submission Modal -->
+    <div id="submitModal" class="fixed inset-0 bg-[#10062d]/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-200" id="submitModalContent">
+            <div class="p-6 border-b border-[#e2d7ff] flex justify-between items-center bg-[#faf4ff]">
+                <h3 class="font-bold text-xl" id="modalTitle">Submit Assignment</h3>
+                <button onclick="closeSubmitModal()" class="text-[#32294f]/40 hover:text-[#32294f]"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <form id="submitForm" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
+                <div class="border-2 border-dashed border-[#e2d7ff] rounded-3xl p-8 text-center bg-[#f5eeff]/30 hover:bg-[#f5eeff]/50 transition-colors cursor-pointer relative" onclick="document.getElementById('fileInput').click()">
+                    <span class="material-symbols-outlined text-4xl text-[#4a40e0] mb-2">upload_file</span>
+                    <p class="font-bold text-sm">Click to upload your solution</p>
+                    <p class="text-[10px] text-[#32294f]/40 mt-1 uppercase font-black">PDF or Docs only (Max 50MB)</p>
+                    <input type="file" name="submission_file" id="fileInput" class="hidden" onchange="updateFileName(this)" required>
+                    <p id="fileNameDisplay" class="mt-4 text-xs font-bold text-[#4a40e0] truncate px-4"></p>
+                </div>
+                <button type="submit" class="w-full bg-[#4a40e0] text-white font-bold py-4 rounded-xl hover:bg-[#3d30d4] transition-colors shadow-lg shadow-[#4a40e0]/20">
+                    Confirm Submission
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    
+
+    <script>
+        function openSubmitModal(id, title) {
+            document.getElementById('submitForm').action = `/student/assignment/${id}/submit`;
+            document.getElementById('modalTitle').innerText = 'Submit: ' + title;
+            
+            const m = document.getElementById('submitModal');
+            const c = document.getElementById('submitModalContent');
+            m.classList.remove('hidden');
+            setTimeout(() => { c.classList.remove('scale-95', 'opacity-0'); }, 10);
+        }
+
+        function closeSubmitModal() {
+            const m = document.getElementById('submitModal');
+            const c = document.getElementById('submitModalContent');
+            c.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { m.classList.add('hidden'); }, 200);
+        }
+
+        function updateFileName(input) {
+            const display = document.getElementById('fileNameDisplay');
+            if (input.files && input.files[0]) {
+                display.innerText = 'Selected: ' + input.files[0].name;
+            } else {
+                display.innerText = '';
+            }
+        }
+    </script>
+</body>
+</html>

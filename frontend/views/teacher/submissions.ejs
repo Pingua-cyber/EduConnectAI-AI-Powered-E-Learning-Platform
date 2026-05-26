@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Submissions - EduConnect AI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf4ff; }
+        h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="text-[#32294f] pb-32">
+
+    <!-- Top Navigation -->
+    <nav class="sticky top-0 z-50 bg-[#faf4ff]/80 backdrop-blur-xl border-b border-[#e2d7ff]/50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="/teacher/assignments" class="w-10 h-10 rounded-xl bg-white border border-[#e2d7ff] flex items-center justify-center text-[#4a40e0] font-bold shadow-sm">
+                    <span class="material-symbols-outlined text-xl">arrow_back</span>
+                </a>
+                <span class="font-['Plus_Jakarta_Sans'] font-extrabold text-xl tracking-tight">Review <span class="text-[#4a40e0]">Submissions</span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <header class="mb-10">
+            <h1 class="text-3xl font-extrabold tracking-tight mb-2"><%= assignment.title %></h1>
+            <div class="flex items-center gap-4 text-[#32294f]/60 font-medium">
+                <div class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">calendar_today</span>
+                    <span>Due: <%= new Date(assignment.deadline).toLocaleDateString() %></span>
+                </div>
+                <div class="w-1.5 h-1.5 rounded-full bg-[#e2d7ff]"></div>
+                <span><%= submissions.length %> Submissions</span>
+            </div>
+        </header>
+
+        <div class="bg-white rounded-[2.5rem] border border-[#e2d7ff] shadow-sm overflow-hidden">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-[10px] font-black text-[#32294f]/40 uppercase tracking-[0.2em] border-b border-[#e2d7ff] bg-[#faf4ff]/50">
+                        <th class="px-8 py-5">Student</th>
+                        <th class="px-8 py-5">Submitted</th>
+                        <th class="px-8 py-5">Status</th>
+                        <th class="px-8 py-5">Marks</th>
+                        <th class="px-8 py-5 text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[#e2d7ff]/50">
+                    <% submissions.forEach(sub => { %>
+                        <tr class="hover:bg-[#f5eeff]/30 transition-colors group">
+                            <td class="px-8 py-5">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-[#e8deff] text-[#4a40e0] flex items-center justify-center font-bold text-xs">
+                                        <%= sub.student_name.charAt(0).toUpperCase() %>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="font-bold text-[#32294f]"><%= sub.student_name %></span>
+                                        <span class="text-[10px] text-[#32294f]/40 font-bold"><%= sub.student_email %></span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-8 py-5">
+                                <span class="text-sm font-medium text-[#32294f]/60">
+                                    <%= new Date(sub.submitted_at).toLocaleString() %>
+                                </span>
+                            </td>
+                            <td class="px-8 py-5">
+                                <span class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider <%= sub.status === 'graded' ? 'bg-green-100 text-green-600' : (sub.status === 'late' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600') %>">
+                                    <%= sub.status %>
+                                </span>
+                            </td>
+                            <td class="px-8 py-5">
+                                <span class="font-black text-lg <%= sub.marks ? 'text-[#4a40e0]' : 'text-[#32294f]/20' %>">
+                                    <%= sub.marks !== null ? sub.marks : '--' %><span class="text-[10px] text-[#32294f]/20">/100</span>
+                                </span>
+                            </td>
+                            <td class="px-8 py-5 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="<%= sub.file_path %>" target="_blank" class="w-10 h-10 rounded-xl bg-[#f5eeff] text-[#4a40e0] flex items-center justify-center hover:bg-[#e8deff] transition-colors" title="Download Submission">
+                                        <span class="material-symbols-outlined text-[20px]">download</span>
+                                    </a>
+                                    <button onclick="openGradeModal('<%= sub.id %>', '<%= sub.marks %>', `<%= sub.feedback %>`)" class="px-4 py-2 bg-[#4a40e0] text-white rounded-xl text-xs font-bold hover:bg-[#3d30d4] transition-colors shadow-lg shadow-[#4a40e0]/10">
+                                        Grade
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                    
+                    <% if (submissions.length === 0) { %>
+                        <tr>
+                            <td colspan="5" class="py-20 text-center">
+                                <div class="w-16 h-16 bg-[#faf4ff] text-[#4a40e0]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <span class="material-symbols-outlined text-4xl">cloud_off</span>
+                                </div>
+                                <h3 class="font-bold text-lg text-[#32294f]/40">No submissions yet.</h3>
+                                <p class="text-sm text-[#32294f]/30">Students will upload their files here.</p>
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Grading Modal -->
+    <div id="gradeModal" class="fixed inset-0 bg-[#10062d]/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-200" id="gradeModalContent">
+            <div class="p-6 border-b border-[#e2d7ff] flex justify-between items-center bg-[#faf4ff]">
+                <h3 class="font-bold text-xl">Grade Submission</h3>
+                <button onclick="closeGradeModal()" class="text-[#32294f]/40 hover:text-[#32294f]"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <form id="gradeForm" class="p-6 space-y-4">
+                <input type="hidden" id="submissionId">
+                <div>
+                    <label class="block text-sm font-bold mb-2">Marks (0-100)</label>
+                    <input type="number" id="marks" min="0" max="100" class="w-full bg-[#f5eeff] border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#4a40e0] outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2">Feedback</label>
+                    <textarea id="feedback" rows="4" class="w-full bg-[#f5eeff] border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#4a40e0] outline-none" placeholder="Provide constructive feedback..."></textarea>
+                </div>
+                <button type="submit" id="saveGradeBtn" class="w-full bg-[#4a40e0] text-white font-bold py-4 rounded-xl hover:bg-[#3d30d4] transition-colors shadow-lg shadow-[#4a40e0]/20">
+                    Save Grade
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openGradeModal(id, marks, feedback) {
+            document.getElementById('submissionId').value = id;
+            document.getElementById('marks').value = marks !== 'null' ? marks : '';
+            document.getElementById('feedback').value = feedback !== 'null' ? feedback : '';
+            
+            const m = document.getElementById('gradeModal');
+            const c = document.getElementById('gradeModalContent');
+            m.classList.remove('hidden');
+            setTimeout(() => { c.classList.remove('scale-95', 'opacity-0'); }, 10);
+        }
+
+        function closeGradeModal() {
+            const m = document.getElementById('gradeModal');
+            const c = document.getElementById('gradeModalContent');
+            c.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { m.classList.add('hidden'); }, 200);
+        }
+
+        document.getElementById('gradeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('submissionId').value;
+            const marks = document.getElementById('marks').value;
+            const feedback = document.getElementById('feedback').value;
+            const btn = document.getElementById('saveGradeBtn');
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Saving...';
+
+            try {
+                const res = await fetch(`/teacher/assignment/grade/${id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ marks, feedback })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.error);
+                }
+            } catch (err) {
+                alert('Error saving grade');
+            }
+            btn.disabled = false;
+            btn.innerHTML = 'Save Grade';
+        });
+    </script>
+</body>
+</html>

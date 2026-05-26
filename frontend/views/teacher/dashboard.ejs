@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - EduConnect AI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf4ff; }
+        h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="text-[#32294f] pb-12">
+    <%- include('../partials/teacher-sidebar') %>
+
+    <!-- Top Navigation -->
+    <nav class="sticky top-0 z-50 bg-[#faf4ff]/80 backdrop-blur-xl border-b border-[#e2d7ff]/50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div></div>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex flex-col items-end mr-2">
+                    <span class="font-bold text-sm leading-tight"><%= user.name %></span>
+                    <span class="text-xs text-[#32294f]/60 font-medium capitalize"><%= user.role %></span>
+                </div>
+                <div class="relative">
+                    <button onclick="toggleProfileDropdown()" class="w-10 h-10 rounded-full bg-[#e8deff] text-[#4a40e0] flex items-center justify-center font-bold border-2 border-white shadow-sm overflow-hidden hover:ring-2 hover:ring-[#4a40e0] transition-all" id="profileBtn">
+                        <% if (user.profile_image) { %>
+                            <img src="<%= user.profile_image %>" class="w-full h-full object-cover">
+                        <% } else { %>
+                            <%= user.name.charAt(0).toUpperCase() %>
+                        <% } %>
+                    </button>
+                    <!-- Profile Dropdown -->
+                    <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-[#e2d7ff] py-2 hidden z-[60]">
+                        <div class="px-4 py-2 border-b border-[#e2d7ff] mb-1">
+                            <p class="text-xs text-[#32294f]/50 font-bold uppercase tracking-wider">Profile Management</p>
+                        </div>
+                        <a href="/teacher/profile" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-[#32294f] hover:bg-[#f5eeff] transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">account_circle</span> Profile
+                        </a>
+                        <a href="/auth/logout" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-500 hover:bg-red-50 transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">logout</span> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        
+        <header class="mb-10 flex justify-between items-end gap-4">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">Subject Management</h1>
+                <p class="text-[#32294f]/70 font-medium">Manage your subjects, courses, and view active students.</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="openAssignmentModal()" class="flex items-center gap-2 bg-white text-[#4a40e0] border border-[#4a40e0] px-6 py-3 rounded-xl font-bold hover:bg-[#f5eeff] transition-colors shadow-sm">
+                    <span class="material-symbols-outlined">assignment</span> Post Assignment
+                </button>
+                <button onclick="openSubjectModal()" class="hidden md:flex items-center gap-2 bg-[#4a40e0] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#3d30d4] transition-colors shadow-lg shadow-[#4a40e0]/20">
+                    <span class="material-symbols-outlined">add</span> Create Subject
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div class="bg-gradient-to-br from-[#4a40e0] to-[#702ae1] rounded-3xl p-6 text-white shadow-xl shadow-[#4a40e0]/20 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-20">
+                    <span class="material-symbols-outlined text-6xl" style="font-variation-settings: 'FILL' 1;">book</span>
+                </div>
+                <h3 class="text-white/80 font-semibold mb-1 relative z-10 text-xs uppercase tracking-wider">Total Subjects</h3>
+                <div class="text-4xl font-extrabold tracking-tight relative z-10 mb-2"><%= subjects.length %></div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 border border-[#e2d7ff] shadow-sm relative overflow-hidden group hover:border-[#9795ff] transition-colors">
+                <div class="absolute top-0 right-0 p-4 text-[#e8deff] group-hover:text-[#dcc9ff] transition-colors">
+                    <span class="material-symbols-outlined text-6xl" style="font-variation-settings: 'FILL' 1;">import_contacts</span>
+                </div>
+                <h3 class="text-[#32294f]/60 font-semibold mb-1 relative z-10 text-xs uppercase tracking-wider">Total Courses</h3>
+                <div class="text-4xl font-extrabold text-[#32294f] tracking-tight relative z-10 mb-2"><%= totalCourses %></div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 border border-[#e2d7ff] shadow-sm relative overflow-hidden group hover:border-[#9795ff] transition-colors">
+                <div class="absolute top-0 right-0 p-4 text-[#e8deff] group-hover:text-[#dcc9ff] transition-colors">
+                    <span class="material-symbols-outlined text-6xl" style="font-variation-settings: 'FILL' 1;">groups</span>
+                </div>
+                <h3 class="text-[#32294f]/60 font-semibold mb-1 relative z-10 text-xs uppercase tracking-wider">Active Students</h3>
+                <div class="text-4xl font-extrabold text-[#32294f] tracking-tight relative z-10 mb-2"><%= activeStudents %></div>
+            </div>
+
+            <div class="bg-[#10062d] rounded-3xl p-6 text-white shadow-xl relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-4 text-white/5 group-hover:text-primary/20 transition-all duration-700 scale-150 rotate-12">
+                    <span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1;">psychology</span>
+                </div>
+                <h3 class="text-white/40 font-semibold mb-1 relative z-10 text-xs uppercase tracking-wider flex items-center gap-1">
+                    AI Insight
+                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                </h3>
+                <div class="relative z-10">
+                    <div class="flex items-end gap-2 mb-1">
+                        <span class="text-3xl font-extrabold text-white"><%= aiTeachingInsight.avgClassScore %>%</span>
+                        <span class="text-[10px] font-bold text-white/40 uppercase mb-1">Avg Class</span>
+                    </div>
+                    <p class="text-[10px] font-medium text-white/60 leading-tight">
+                        <span class="text-primary-container font-bold">Best:</span> <%= aiTeachingInsight.bestCourse %>
+                        <br>
+                        <span class="text-red-400 font-bold">Focus:</span> <%= aiTeachingInsight.needsAttention %>
+                    </p>
+                    <div class="mt-3 p-2 bg-white/5 rounded-lg border border-white/10">
+                        <p class="text-[9px] font-bold text-white/80 italic leading-snug" id="aiTipText">
+                            "<%= aiTeachingInsight.tip || 'Loading...' %>"
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Subjects List -->
+            <div class="lg:col-span-1 space-y-4">
+                <h2 class="text-xl font-bold mb-4">Your Subjects</h2>
+                <div class="space-y-3" id="subjectList">
+                    <% subjects.forEach((subj, index) => { %>
+                        <div class="relative group/subj">
+                            <button onclick="loadCourses('<%= subj.id %>', '<%= subj.name %>')" class="w-full text-left bg-white rounded-2xl p-5 border <%= index === 0 ? 'border-[#4a40e0] ring-1 ring-[#4a40e0]' : 'border-[#e2d7ff]' %> shadow-sm hover:border-[#4a40e0] transition-all flex items-center justify-between subject-btn pr-12" data-id="<%= subj.id %>">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-[#f5eeff] text-[#4a40e0] flex items-center justify-center">
+                                        <span class="material-symbols-outlined">folder</span>
+                                    </div>
+                                    <span class="font-bold text-lg"><%= subj.name %></span>
+                                </div>
+                                <span class="material-symbols-outlined text-[#32294f]/30 group-hover:text-[#4a40e0]">chevron_right</span>
+                            </button>
+                            <button onclick="deleteSubject('<%= subj.id %>', event)" class="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center opacity-0 group-hover/subj:opacity-100 transition-opacity hover:bg-red-100 z-10" title="Delete Subject">
+                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                        </div>
+                    <% }) %>
+                    <% if(subjects.length === 0) { %>
+                        <div class="bg-white p-6 rounded-2xl text-center border border-[#e2d7ff] border-dashed">
+                            <p class="text-[#32294f]/60 mb-4">No subjects found.</p>
+                            <button onclick="openSubjectModal()" class="text-[#4a40e0] font-bold text-sm">Create One Now</button>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Courses View -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-bold" id="courseListTitle">Select a Subject</h2>
+                    <button onclick="openCourseModal()" id="addCourseBtn" class="hidden text-sm font-bold text-[#4a40e0] bg-[#e8deff] px-4 py-2 rounded-lg hover:bg-[#dcc9ff] transition-colors items-center gap-1">
+                        <span class="material-symbols-outlined text-[18px]">add</span> Add Course
+                    </button>
+                </div>
+                
+                <div id="courseContainer" class="bg-white rounded-3xl border border-[#e2d7ff] p-8 shadow-sm min-h-[400px]">
+                    <div class="text-center py-20 text-[#32294f]/40">
+                        <span class="material-symbols-outlined text-6xl mb-4">touch_app</span>
+                        <p class="font-medium">Select a subject on the left to view or manage its courses.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Student Activity (Students & Analytics Section) -->
+        <div class="mt-12 bg-white rounded-[2.5rem] border border-[#e2d7ff] shadow-sm overflow-hidden mb-20">
+            <div class="p-8 border-b border-[#e2d7ff] flex justify-between items-center bg-[#faf4ff]/50">
+                <div>
+                    <h2 class="text-2xl font-bold">Recent Student Activity</h2>
+                    <p class="text-sm text-[#32294f]/60">Quick overview of recent quiz submissions across all your courses.</p>
+                </div>
+                <div class="flex gap-2">
+                    <a href="/teacher/students" class="px-4 py-2 bg-white border border-[#e2d7ff] rounded-xl text-sm font-bold text-[#4a40e0] hover:bg-[#f5eeff] transition-colors">View All Students</a>
+                    <a href="/teacher/analytics" class="px-4 py-2 bg-[#4a40e0] text-white rounded-xl text-sm font-bold hover:bg-[#3d30d4] transition-colors shadow-lg shadow-[#4a40e0]/10">Full Analytics</a>
+                </div>
+            </div>
+            <div class="p-0">
+                <% if (recentActivity && recentActivity.length > 0) { %>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr class="text-[10px] font-black text-[#32294f]/40 uppercase tracking-[0.2em] border-b border-[#e2d7ff]">
+                                    <th class="px-8 py-5">Student</th>
+                                    <th class="px-8 py-5">Course / Quiz</th>
+                                    <th class="px-8 py-5 text-center">Score</th>
+                                    <th class="px-8 py-5 text-right">Time</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-[#e2d7ff]/50">
+                                <% recentActivity.forEach(activity => { %>
+                                    <tr class="hover:bg-[#f5eeff]/30 transition-colors group">
+                                        <td class="px-8 py-5">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-10 h-10 rounded-full bg-[#e8deff] text-[#4a40e0] flex items-center justify-center font-bold text-xs">
+                                                    <%= activity.student_name.charAt(0).toUpperCase() %>
+                                                </div>
+                                                <span class="font-bold text-[#32294f] group-hover:text-[#4a40e0] transition-colors"><%= activity.student_name %></span>
+                                            </div>
+                                        </td>
+                                        <td class="px-8 py-5">
+                                            <div class="flex flex-col">
+                                                <span class="font-bold text-sm"><%= activity.course_title %></span>
+                                                <span class="text-[10px] text-[#32294f]/40 font-bold uppercase tracking-wider">Quiz Submission</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-8 py-5 text-center">
+                                            <% let colorClass = activity.score >= 80 ? 'text-green-500 bg-green-50' : (activity.score >= 60 ? 'text-orange-500 bg-orange-50' : 'text-red-500 bg-red-50'); %>
+                                            <span class="px-3 py-1 rounded-lg text-sm font-black <%= colorClass %>">
+                                                <%= activity.score %>%
+                                            </span>
+                                        </td>
+                                        <td class="px-8 py-5 text-right">
+                                            <span class="text-xs font-bold text-[#32294f]/40">
+                                                <%= activity.created_at ? new Date(activity.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Just now' %>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="py-20 text-center">
+                        <div class="w-16 h-16 bg-[#faf4ff] text-[#4a40e0]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="material-symbols-outlined text-4xl">analytics</span>
+                        </div>
+                        <h3 class="font-bold text-lg text-[#32294f]/40">No activity yet.</h3>
+                        <p class="text-sm text-[#32294f]/30">Activity will appear here as students complete quizzes.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    
+
+    <!-- Mobile FAB for Subject -->
+    <button onclick="openSubjectModal()" class="md:hidden fixed bottom-28 right-6 w-14 h-14 bg-gradient-to-br from-[#4a40e0] to-[#702ae1] text-white rounded-full shadow-xl shadow-[#4a40e0]/30 flex items-center justify-center z-40 transform active:scale-95 transition-transform">
+        <span class="material-symbols-outlined text-3xl">add</span>
+    </button>
+
+    <!-- MODALS -->
+    <!-- Create Subject Modal -->
+    <div id="subjectModal" class="fixed inset-0 bg-[#10062d]/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-200" id="subjectModalContent">
+            <div class="p-6 border-b border-[#e2d7ff] flex justify-between items-center bg-[#faf4ff]">
+                <h3 class="font-bold text-xl">Create New Subject</h3>
+                <button onclick="closeSubjectModal()" class="text-[#32294f]/40 hover:text-[#32294f]"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <form id="createSubjectForm" class="p-6">
+                <div class="mb-6">
+                    <label class="block text-sm font-bold mb-2 text-[#32294f]">Subject Name</label>
+                    <input type="text" id="subjectName" class="w-full bg-[#f5eeff] border-none rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-[#4a40e0] outline-none transition-shadow" placeholder="e.g. Advanced Physics" required>
+                </div>
+                <button type="submit" id="createSubjBtn" class="w-full bg-[#4a40e0] text-white font-bold py-3 rounded-xl hover:bg-[#3d30d4] transition-colors flex justify-center items-center gap-2">
+                    Create Subject
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Course Modal -->
+    <div id="courseModal" class="fixed inset-0 bg-[#10062d]/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-200" id="courseModalContent">
+            <div class="p-6 border-b border-[#e2d7ff] flex justify-between items-center bg-[#faf4ff]">
+                <h3 class="font-bold text-xl">Add New Course</h3>
+                <button onclick="closeCourseModal()" class="text-[#32294f]/40 hover:text-[#32294f]"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <form id="createCourseForm" class="p-6">
+                <div class="mb-4">
+                    <label class="block text-sm font-bold mb-2">Course Title</label>
+                    <input type="text" id="courseTitle" class="w-full bg-[#f5eeff] border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#4a40e0] outline-none" required>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-bold mb-2">Description</label>
+                    <textarea id="courseDesc" rows="3" class="w-full bg-[#f5eeff] border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#4a40e0] outline-none"></textarea>
+                </div>
+                <button type="submit" id="createCourseBtn" class="w-full bg-[#4a40e0] text-white font-bold py-3 rounded-xl hover:bg-[#3d30d4] transition-colors flex justify-center items-center gap-2">
+                    Add Course
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Post Assignment Modal -->
+    <div id="assignmentModal" class="fixed inset-0 bg-[#10062d]/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-200" id="assignmentModalContent">
+            <div class="p-6 border-b border-[#e2d7ff] flex justify-between items-center bg-[#faf4ff]">
+                <h3 class="font-bold text-xl">Post New Assignment</h3>
+                <button onclick="closeAssignmentModal()" class="text-[#32294f]/40 hover:text-[#32294f]"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            <form action="/teacher/assignment/create" method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-bold mb-2">Select Subject</label>
+                    <select name="subject_id" class="w-full bg-[#f5eeff] border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#4a40e0] outline-none" required>
+                        <% subjects.forEach(subj => { %>
+                            <option value="<%= subj.id %>"><%= subj.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2">Assignment Title</label>
+                    <input type="text" name="title" class="w-full bg-[#f5eeff] border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#4a40e0] outline-none" placeholder="e.g. Weekly Lab Report" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2">Description</label>
+                    <textarea name="description" rows="3" class="w-full bg-[#f5eeff] border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#4a40e0] outline-none" placeholder="Provide instructions for the students..."></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-bold mb-2">Deadline</label>
+                        <input type="datetime-local" name="deadline" class="w-full bg-[#f5eeff] border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-[#4a40e0] outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-2">Attachment (PDF/Docs)</label>
+                        <input type="file" name="assignment_file" class="w-full text-xs text-[#32294f]/40 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-[#4a40e0]/10 file:text-[#4a40e0] hover:file:bg-[#4a40e0]/20">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-[#4a40e0] text-white font-bold py-4 rounded-xl hover:bg-[#3d30d4] transition-colors shadow-lg shadow-[#4a40e0]/20 mt-4">
+                    Post Assignment
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        let currentSubjectId = null;
+
+        function toggleProfileDropdown() {
+            const d = document.getElementById('profileDropdown');
+            d.classList.toggle('hidden');
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', (e) => {
+            const btn = document.getElementById('profileBtn');
+            const d = document.getElementById('profileDropdown');
+            if (btn && !btn.contains(e.target) && d && !d.contains(e.target)) {
+                d.classList.add('hidden');
+            }
+        });
+
+        async function deleteSubject(id, event) {
+            if (event) event.stopPropagation();
+            if (!confirm('Are you sure you want to delete this subject? All courses and materials within it will be permanently removed.')) return;
+
+            try {
+                const res = await fetch(`/teacher/subject/delete/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Failed to delete subject');
+                }
+            } catch (err) {
+                alert('Error deleting subject');
+            }
+        }
+
+        async function deleteCourseDashboard(id, event) {
+            if (event) event.stopPropagation();
+            if (!confirm('Are you sure you want to permanently delete this course? This action cannot be undone and will remove it for all students.')) return;
+
+            try {
+                const res = await fetch(`/teacher/course/${id}/delete`, { 
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json' }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    // Reload courses for current subject
+                    const subjectName = document.getElementById('courseListTitle').innerText.replace(' Courses', '');
+                    loadCourses(currentSubjectId, subjectName);
+                } else {
+                    alert(data.error || 'Failed to delete course');
+                }
+            } catch (err) {
+                alert('Error deleting course');
+            }
+        }
+
+        // Auto-load first subject if exists
+        document.addEventListener("DOMContentLoaded", () => {
+            const firstSubj = document.querySelector('.subject-btn');
+            if (firstSubj) {
+                firstSubj.click();
+            }
+        });
+
+        async function loadCourses(subjectId, subjectName) {
+            currentSubjectId = subjectId;
+            document.getElementById('courseListTitle').innerText = subjectName + " Courses";
+            document.getElementById('addCourseBtn').classList.remove('hidden');
+            document.getElementById('addCourseBtn').classList.add('flex');
+
+            // Highlight selected button
+            document.querySelectorAll('.subject-btn').forEach(btn => {
+                if (btn.dataset.id == subjectId) {
+                    btn.classList.add('border-[#4a40e0]', 'ring-1', 'ring-[#4a40e0]');
+                    btn.classList.remove('border-[#e2d7ff]');
+                } else {
+                    btn.classList.remove('border-[#4a40e0]', 'ring-1', 'ring-[#4a40e0]');
+                    btn.classList.add('border-[#e2d7ff]');
+                }
+            });
+
+            const container = document.getElementById('courseContainer');
+            container.innerHTML = '<div class="flex justify-center items-center py-20"><span class="material-symbols-outlined animate-spin text-[#4a40e0] text-4xl">refresh</span></div>';
+
+            try {
+                const res = await fetch(`/teacher/courses/${subjectId}`);
+                const data = await res.json();
+
+                if (data.courses.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-16 text-[#32294f]/60">
+                            <span class="material-symbols-outlined text-5xl mb-4 text-[#e2d7ff]">inbox</span>
+                            <p>No courses added to this subject yet.</p>
+                            <button onclick="openCourseModal()" class="mt-4 text-[#4a40e0] font-bold underline">Add the first course</button>
+                        </div>
+                    `;
+                } else {
+                    let html = '<div class="space-y-4">';
+                    data.courses.forEach(c => {
+                        html += `
+                            <div class="border border-[#e2d7ff] rounded-2xl p-5 hover:border-[#9795ff] transition-colors group">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-bold text-lg text-[#32294f] group-hover:text-[#4a40e0] transition-colors">${c.title}</h4>
+                                        <p class="text-sm text-[#32294f]/60 mt-1">${c.description || 'No description provided.'}</p>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <button onclick="deleteCourseDashboard('${c.id}', event)" class="bg-red-50 text-red-500 p-2 rounded-xl hover:bg-red-500 hover:text-white transition-colors" title="Delete Course">
+                                            <span class="material-symbols-outlined">delete</span>
+                                        </button>
+                                        <a href="/teacher/course/${c.id}" class="bg-[#f5eeff] text-[#4a40e0] p-2 rounded-xl hover:bg-[#e8deff] transition-colors" title="View Course">
+                                            <span class="material-symbols-outlined">arrow_forward</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    container.innerHTML = html;
+                }
+            } catch (err) {
+                container.innerHTML = '<p class="text-red-500 py-10">Error loading courses.</p>';
+            }
+        }
+
+        // Modals Logic
+        function openSubjectModal() {
+            const m = document.getElementById('subjectModal');
+            const c = document.getElementById('subjectModalContent');
+            m.classList.remove('hidden');
+            setTimeout(() => { c.classList.remove('scale-95', 'opacity-0'); }, 10);
+        }
+        function closeSubjectModal() {
+            const m = document.getElementById('subjectModal');
+            const c = document.getElementById('subjectModalContent');
+            c.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { m.classList.add('hidden'); }, 200);
+        }
+
+        function openCourseModal() {
+            if(!currentSubjectId) return alert('Select a subject first');
+            const m = document.getElementById('courseModal');
+            const c = document.getElementById('courseModalContent');
+            m.classList.remove('hidden');
+            setTimeout(() => { c.classList.remove('scale-95', 'opacity-0'); }, 10);
+        }
+        function closeCourseModal() {
+            const m = document.getElementById('courseModal');
+            const c = document.getElementById('courseModalContent');
+            c.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { m.classList.add('hidden'); }, 200);
+        }
+
+        // Form Submissions
+        document.getElementById('createSubjectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('createSubjBtn');
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Creating...';
+            btn.disabled = true;
+
+            const name = document.getElementById('subjectName').value;
+            try {
+                const res = await fetch('/teacher/subject/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+                if (res.ok) window.location.reload();
+                else alert('Failed to create subject');
+            } catch (err) { alert('Error'); }
+        });
+
+        function openAssignmentModal() {
+            const m = document.getElementById('assignmentModal');
+            const c = document.getElementById('assignmentModalContent');
+            m.classList.remove('hidden');
+            setTimeout(() => { c.classList.remove('scale-95', 'opacity-0'); }, 10);
+        }
+        function closeAssignmentModal() {
+            const m = document.getElementById('assignmentModal');
+            const c = document.getElementById('assignmentModalContent');
+            c.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { m.classList.add('hidden'); }, 200);
+        }
+
+        document.getElementById('createCourseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('createCourseBtn');
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Adding...';
+            btn.disabled = true;
+
+            const title = document.getElementById('courseTitle').value;
+            const desc = document.getElementById('courseDesc').value;
+            
+            try {
+                const res = await fetch('/teacher/course/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ subject_id: currentSubjectId, title, description: desc })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    closeCourseModal();
+                    loadCourses(currentSubjectId, document.getElementById('courseListTitle').innerText.replace(' Courses',''));
+                    document.getElementById('createCourseForm').reset();
+                } else {
+                    alert(data.error);
+                }
+            } catch (err) { alert('Error'); }
+            
+            btn.innerHTML = 'Add Course'; btn.disabled = false;
+        });
+
+        // Async AI Insight Fetch
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await fetch('/teacher/api/insight');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.tip) {
+                        document.getElementById('aiTipText').innerText = `"${data.tip}"`;
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to load AI insight", err);
+                document.getElementById('aiTipText').innerText = `"Insights currently unavailable."`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Courses - EduConnect AI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf4ff; }
+        h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="text-[#32294f] pb-12">
+    <%- include('../partials/teacher-sidebar') %>
+
+    <!-- Top Navigation -->
+    <nav class="sticky top-0 z-50 bg-[#faf4ff]/80 backdrop-blur-xl border-b border-[#e2d7ff]/50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div></div>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex flex-col items-end mr-2">
+                    <span class="font-bold text-sm leading-tight"><%= user.name %></span>
+                    <span class="text-xs text-[#32294f]/60 font-medium capitalize"><%= user.role %></span>
+                </div>
+                <div class="relative">
+                    <button onclick="toggleProfileDropdown()" class="w-10 h-10 rounded-full bg-[#e8deff] text-[#4a40e0] flex items-center justify-center font-bold border-2 border-white shadow-sm overflow-hidden hover:ring-2 hover:ring-[#4a40e0] transition-all" id="profileBtn">
+                        <% if (user.profile_image) { %>
+                            <img src="<%= user.profile_image %>" class="w-full h-full object-cover">
+                        <% } else { %>
+                            <%= user.name.charAt(0).toUpperCase() %>
+                        <% } %>
+                    </button>
+                    <!-- Profile Dropdown -->
+                    <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-[#e2d7ff] py-2 hidden z-[60]">
+                        <div class="px-4 py-2 border-b border-[#e2d7ff] mb-1">
+                            <p class="text-xs text-[#32294f]/50 font-bold uppercase tracking-wider">Profile Management</p>
+                        </div>
+                        <a href="/teacher/profile" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-[#32294f] hover:bg-[#f5eeff] transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">account_circle</span> Profile
+                        </a>
+                        <a href="/auth/logout" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-500 hover:bg-red-50 transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">logout</span> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <div class="flex justify-between items-center mb-10">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">My Courses</h1>
+                <p class="text-[#32294f]/70 font-medium">Manage and organize your curriculum with ease.</p>
+            </div>
+            <button onclick="openModal()" class="bg-[#4a40e0] text-white px-6 py-3 rounded-2xl font-bold hover:bg-[#3d30d4] transition-all shadow-lg shadow-[#4a40e0]/20 flex items-center gap-2">
+                <span class="material-symbols-outlined">add_circle</span> Create Course
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <% if (courses && courses.length > 0) { %>
+                <% courses.forEach(course => { %>
+                    <div class="bg-white rounded-3xl p-6 border border-[#e2d7ff] shadow-sm hover:shadow-md transition-all group">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 rounded-2xl bg-[#f5eeff] text-[#4a40e0] flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">book_4</span>
+                                </div>
+                                <h3 class="font-extrabold text-xl line-clamp-1"><%= course.title %></h3>
+                            </div>
+                            <form action="/teacher/course/<%= course.id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this course? This action cannot be undone and will remove it for all students.');" class="ml-2 flex-shrink-0">
+                                <button type="submit" class="w-10 h-10 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-colors" title="Delete Course">
+                                    <span class="material-symbols-outlined text-xl">delete</span>
+                                </button>
+                            </form>
+                        </div>
+                        <p class="text-sm text-[#32294f]/60 mb-6 line-clamp-3 min-h-[4.5rem]">
+                            <%= course.description || 'No description provided for this course.' %>
+                        </p>
+                        <a href="/teacher/course/<%= course.id %>" class="w-full py-4 rounded-2xl bg-[#faf4ff] text-[#4a40e0] font-bold text-center block hover:bg-[#4a40e0] hover:text-white transition-all border border-[#e2d7ff]">
+                            Manage Course
+                        </a>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="col-span-full py-20 text-center bg-white rounded-[3rem] border-2 border-dashed border-[#e2d7ff]">
+                    <div class="w-20 h-20 bg-[#f5eeff] text-[#4a40e0] rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="material-symbols-outlined text-4xl">folder_open</span>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-2">No Courses Created</h2>
+                    <p class="text-[#32294f]/60 mb-8 max-w-sm mx-auto">You haven't started any courses yet. Create your first course to begin teaching!</p>
+                    <button onclick="openModal()" class="bg-[#4a40e0] text-white px-8 py-4 rounded-2xl font-bold hover:bg-[#3d30d4] transition-all shadow-lg shadow-[#4a40e0]/20">
+                        Create Your First Course
+                    </button>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <!-- Create Course Modal -->
+    <div id="courseModal" class="fixed inset-0 bg-[#10062d]/40 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-md shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-200" id="modalContent">
+            <div class="p-8 border-b border-[#e2d7ff] flex justify-between items-center bg-[#faf4ff]">
+                <h3 class="font-extrabold text-2xl">New Course</h3>
+                <button onclick="closeModal()" class="text-[#32294f]/40 hover:text-[#32294f]"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            
+            <form id="createCourseForm" class="p-8 space-y-6">
+                <div>
+                    <label class="block text-sm font-bold text-[#32294f]/60 uppercase tracking-wider mb-2">Subject</label>
+                    <select name="subject_id" class="w-full bg-[#f5eeff] border-2 border-transparent focus:border-[#4a40e0] rounded-2xl px-5 py-4 outline-none transition-all font-medium" required>
+                        <option value="" disabled selected>Select a subject...</option>
+                        <% if (subjects && subjects.length > 0) { %>
+                            <% subjects.forEach(subj => { %>
+                                <option value="<%= subj.id %>"><%= subj.name %></option>
+                            <% }); %>
+                        <% } %>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-[#32294f]/60 uppercase tracking-wider mb-2">Course Title</label>
+                    <input type="text" name="title" class="w-full bg-[#f5eeff] border-2 border-transparent focus:border-[#4a40e0] rounded-2xl px-5 py-4 outline-none transition-all font-medium" required placeholder="e.g. Modern Physics 101">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-[#32294f]/60 uppercase tracking-wider mb-2">Course Description</label>
+                    <textarea name="description" rows="4" class="w-full bg-[#f5eeff] border-2 border-transparent focus:border-[#4a40e0] rounded-2xl px-5 py-4 outline-none transition-all font-medium resize-none" required placeholder="Describe what students will learn..."></textarea>
+                </div>
+                
+                <button type="submit" id="createCourseBtn" class="w-full bg-[#4a40e0] text-white font-bold py-5 rounded-2xl hover:bg-[#3d30d4] transition-all shadow-lg shadow-[#4a40e0]/20 flex justify-center items-center gap-2">
+                    <span class="material-symbols-outlined">rocket_launch</span> Create Course
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    
+
+    <script>
+        function toggleProfileDropdown() {
+            const d = document.getElementById('profileDropdown');
+            d.classList.toggle('hidden');
+        }
+
+        function openModal() {
+            const m = document.getElementById('courseModal');
+            const c = document.getElementById('modalContent');
+            m.classList.remove('hidden');
+            setTimeout(() => {
+                c.classList.remove('scale-95', 'opacity-0');
+            }, 10);
+        }
+
+        function closeModal() {
+            const m = document.getElementById('courseModal');
+            const c = document.getElementById('modalContent');
+            c.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                m.classList.add('hidden');
+            }, 200);
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', (e) => {
+            const btn = document.getElementById('profileBtn');
+            const d = document.getElementById('profileDropdown');
+            if (btn && !btn.contains(e.target) && d && !d.contains(e.target)) {
+                d.classList.add('hidden');
+            }
+        });
+
+        // AJAX Form Submission
+        document.getElementById('createCourseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('createCourseBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Creating...';
+            btn.disabled = true;
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const res = await fetch('/teacher/course/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (result.success) {
+                    window.location.reload();
+                } else {
+                    alert(result.error || 'Failed to create course');
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                alert('An error occurred');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

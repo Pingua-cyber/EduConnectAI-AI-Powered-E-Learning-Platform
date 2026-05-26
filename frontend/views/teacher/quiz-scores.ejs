@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Scores - EduConnect AI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf4ff; }
+        h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="text-[#32294f] pb-12">
+    <%- include('../partials/teacher-sidebar') %>
+
+    <!-- Top Navigation -->
+    <nav class="sticky top-0 z-50 bg-[#faf4ff]/80 backdrop-blur-xl border-b border-[#e2d7ff]/50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="/teacher/course/<%= quiz.course_id %>" class="w-10 h-10 rounded-xl bg-white border border-[#e2d7ff] flex items-center justify-center text-[#4a40e0] hover:bg-[#f5eeff] transition-colors shadow-sm">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </a>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex flex-col items-end mr-2">
+                    <span class="font-bold text-sm leading-tight"><%= user.name %></span>
+                    <span class="text-xs text-[#32294f]/60 font-medium capitalize"><%= user.role %></span>
+                </div>
+                <div class="relative">
+                    <button onclick="toggleProfileDropdown()" class="w-10 h-10 rounded-full bg-[#e8deff] text-[#4a40e0] flex items-center justify-center font-bold border-2 border-white shadow-sm overflow-hidden hover:ring-2 hover:ring-[#4a40e0] transition-all" id="profileBtn">
+                        <% if (user.profile_image) { %>
+                            <img src="<%= user.profile_image %>" class="w-full h-full object-cover">
+                        <% } else { %>
+                            <%= user.name.charAt(0).toUpperCase() %>
+                        <% } %>
+                    </button>
+                    <!-- Profile Dropdown -->
+                    <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-[#e2d7ff] py-2 hidden z-[60]">
+                        <div class="px-4 py-2 border-b border-[#e2d7ff] mb-1">
+                            <p class="text-xs text-[#32294f]/50 font-bold uppercase tracking-wider">Profile Management</p>
+                        </div>
+                        <a href="/teacher/profile" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-[#32294f] hover:bg-[#f5eeff] transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">account_circle</span> Profile
+                        </a>
+                        <a href="/auth/logout" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-500 hover:bg-red-50 transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">logout</span> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        
+        <header class="mb-8">
+            <div class="bg-gradient-to-br from-[#4a40e0] to-[#702ae1] rounded-3xl p-8 text-white shadow-xl shadow-[#4a40e0]/20 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-20">
+                    <span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1;">assignment_turned_in</span>
+                </div>
+                <div class="relative z-10">
+                    <p class="text-white/70 text-sm font-bold uppercase tracking-wider mb-1"><%= quiz.course_title %></p>
+                    <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2"><%= quiz.title %></h1>
+                    <p class="text-white/80 font-medium max-w-2xl">Viewing all student submissions and scores for this quiz.</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="bg-white rounded-3xl border border-[#e2d7ff] shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-[#e2d7ff] bg-[#faf4ff] flex justify-between items-center">
+                <h2 class="font-bold text-xl flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[#4a40e0]" style="font-variation-settings: 'FILL' 1;">format_list_numbered</span>
+                    Student Scores
+                </h2>
+                <div class="bg-[#e8deff] text-[#4a40e0] px-3 py-1 rounded-full text-xs font-bold">
+                    <%= scores.length %> Submissions
+                </div>
+            </div>
+
+            <% if (scores && scores.length > 0) { %>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-[#faf4ff]/50 text-[#32294f]/60 text-xs uppercase tracking-wider border-b border-[#e2d7ff]">
+                                <th class="p-5 font-semibold">Student Name</th>
+                                <th class="p-5 font-semibold">Email</th>
+                                <th class="p-5 font-semibold text-center">Score</th>
+                                <th class="p-5 font-semibold text-right">Date Submitted</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[#e2d7ff]">
+                            <% scores.forEach(sc => { %>
+                                <tr class="hover:bg-[#f5eeff]/50 transition-colors group">
+                                    <td class="p-5">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-full bg-[#e8deff] text-[#4a40e0] flex items-center justify-center font-bold text-sm shadow-inner">
+                                                <%= sc.student_name.charAt(0).toUpperCase() %>
+                                            </div>
+                                            <span class="font-bold text-sm group-hover:text-[#4a40e0] transition-colors"><%= sc.student_name %></span>
+                                        </div>
+                                    </td>
+                                    <td class="p-5">
+                                        <span class="text-sm text-[#32294f]/70"><%= sc.student_email %></span>
+                                    </td>
+                                    <td class="p-5 text-center">
+                                        <% let colorClass = sc.score >= 80 ? 'bg-[#e6f4ea] text-[#137333]' : (sc.score >= 60 ? 'bg-[#fef7e0] text-[#b06000]' : 'bg-[#fce8e6] text-[#c5221f]'); %>
+                                        <span class="px-3 py-1 rounded-full text-xs font-bold <%= colorClass %>">
+                                            <%= sc.score %>%
+                                        </span>
+                                    </td>
+                                    <td class="p-5 text-right">
+                                        <span class="text-xs text-[#32294f]/50 bg-[#faf4ff] px-3 py-1.5 rounded-lg border border-[#e2d7ff]">
+                                            <%= new Date(sc.created_at).toLocaleString() %>
+                                        </span>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <div class="p-16 text-center">
+                    <div class="w-20 h-20 bg-[#f5eeff] text-[#4a40e0] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="material-symbols-outlined text-4xl">inbox</span>
+                    </div>
+                    <h3 class="font-bold text-xl mb-2">No Submissions Yet</h3>
+                    <p class="text-[#32294f]/60 max-w-sm mx-auto">None of your students have taken this quiz yet. Check back later!</p>
+                </div>
+            <% } %>
+        </div>
+
+    </main>
+
+    <!-- Bottom Navigation -->
+    
+    <script>
+        function toggleProfileDropdown() {
+            const d = document.getElementById('profileDropdown');
+            d.classList.toggle('hidden');
+        }
+
+        // Close dropdown when clicking outside
+        window.addEventListener('click', (e) => {
+            const btn = document.getElementById('profileBtn');
+            const d = document.getElementById('profileDropdown');
+            if (btn && !btn.contains(e.target) && d && !d.contains(e.target)) {
+                d.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

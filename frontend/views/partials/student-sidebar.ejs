@@ -1,0 +1,52 @@
+<!-- Left Sidebar -->
+<aside class="fixed left-0 top-0 h-screen w-20 lg:w-64 bg-white/80 backdrop-blur-3xl border-r border-[#e2d7ff] flex flex-col transition-all duration-300 z-[100]">
+    <div class="h-20 flex items-center justify-center lg:justify-start lg:px-8 border-b border-[#e2d7ff]/50">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4a40e0] to-[#702ae1] flex items-center justify-center text-white shadow-lg flex-shrink-0">
+            <span class="material-symbols-outlined text-xl">school</span>
+        </div>
+        <span class="ml-3 font-headline font-black text-lg text-[#32294f] hidden lg:block tracking-tight">EduConnect</span>
+    </div>
+    
+    <div class="flex-1 overflow-y-auto py-8 flex flex-col gap-2 px-3 lg:px-4 no-scrollbar">
+        <a href="/student/dashboard" class="flex items-center justify-center lg:justify-start gap-4 px-0 lg:px-4 py-3 rounded-2xl transition-all group hover:bg-[#f5eeff] text-[#5f557f]">
+            <span class="material-symbols-outlined text-[#4a40e0] group-hover:scale-110 transition-transform">space_dashboard</span>
+            <span class="font-bold text-sm hidden lg:block">Dashboard</span>
+        </a>
+        
+        <a href="/student/courses" class="flex items-center justify-center lg:justify-start gap-4 px-0 lg:px-4 py-3 rounded-2xl transition-all group hover:bg-[#f5eeff] text-[#5f557f]">
+            <span class="material-symbols-outlined text-[#4a40e0] group-hover:scale-110 transition-transform">import_contacts</span>
+            <span class="font-bold text-sm hidden lg:block">Explore</span>
+        </a>
+        
+        <a href="/student/my-learning" class="flex items-center justify-center lg:justify-start gap-4 px-0 lg:px-4 py-3 rounded-2xl transition-all group hover:bg-[#f5eeff] text-[#5f557f]">
+            <span class="material-symbols-outlined text-[#4a40e0] group-hover:scale-110 transition-transform">analytics</span>
+            <span class="font-bold text-sm hidden lg:block">My Learning</span>
+        </a>
+        
+        <a href="/student/assignments" class="flex items-center justify-center lg:justify-start gap-4 px-0 lg:px-4 py-3 rounded-2xl transition-all group hover:bg-[#f5eeff] text-[#5f557f]">
+            <span class="material-symbols-outlined text-[#4a40e0] group-hover:scale-110 transition-transform">assignment</span>
+            <span class="font-bold text-sm hidden lg:block">Assignments</span>
+        </a>
+        
+        <a href="/student/profile" class="flex items-center justify-center lg:justify-start gap-4 px-0 lg:px-4 py-3 rounded-2xl transition-all group hover:bg-[#f5eeff] text-[#5f557f]">
+            <span class="material-symbols-outlined text-[#4a40e0] group-hover:scale-110 transition-transform">account_circle</span>
+            <span class="font-bold text-sm hidden lg:block">Profile</span>
+        </a>
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="p-4 border-t border-[#e2d7ff]/50">
+        <a href="/auth/logout" class="flex items-center justify-center lg:justify-start gap-4 px-0 lg:px-4 py-3 rounded-2xl text-red-500 hover:bg-red-50 transition-colors group">
+            <span class="material-symbols-outlined group-hover:scale-110 transition-transform">logout</span>
+            <span class="font-bold text-sm hidden lg:block">Logout</span>
+        </a>
+    </div>
+</aside>
+<style>
+    /* Add left margin to body/main across all pages to make room for sidebar */
+    body { padding-left: 5rem !important; }
+    @media (min-width: 1024px) { body { padding-left: 16rem !important; } }
+    /* Fix header width */
+    header { width: calc(100% - 5rem) !important; left: 5rem !important; }
+    @media (min-width: 1024px) { header { width: calc(100% - 16rem) !important; left: 16rem !important; } }
+</style>

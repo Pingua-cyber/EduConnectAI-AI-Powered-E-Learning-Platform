@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina AI - EduConnect AI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#32294f",
+                        "primary-container": "#9795ff",
+                        "surface-container-high": "#e8deff",
+                        "primary-fixed-dim": "#8885ff",
+                        "on-error-container": "#510017",
+                        "secondary-dim": "#6411d5",
+                        "on-tertiary": "#ffefef",
+                        "inverse-surface": "#10062d",
+                        "tertiary-fixed-dim": "#ff7986",
+                        "on-primary": "#f4f1ff",
+                        "outline-variant": "#b2a6d5",
+                        "secondary-fixed": "#dcc9ff",
+                        "tertiary": "#b80438",
+                        "on-tertiary-fixed-variant": "#780021",
+                        "inverse-on-surface": "#a296c4",
+                        "on-surface-variant": "#5f557f",
+                        "secondary-fixed-dim": "#d0b8ff",
+                        "outline": "#7b719c",
+                        "tertiary-dim": "#a20030",
+                        "surface-container-highest": "#e2d7ff",
+                        "tertiary-container": "#ff9099",
+                        "surface": "#faf4ff",
+                        "on-primary-fixed-variant": "#1a0099",
+                        "error-container": "#f74b6d",
+                        "error": "#b41340",
+                        "on-tertiary-fixed": "#39000b",
+                        "background": "#faf4ff",
+                        "on-tertiary-container": "#68001b",
+                        "on-secondary-fixed": "#430097",
+                        "on-secondary-fixed-variant": "#6514d6",
+                        "primary-dim": "#3d30d4",
+                        "primary": "#4a40e0",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#ede4ff",
+                        "secondary-container": "#dcc9ff",
+                        "on-primary-container": "#14007e",
+                        "surface-variant": "#e2d7ff",
+                        "surface-bright": "#faf4ff",
+                        "error-dim": "#a70138",
+                        "on-background": "#32294f",
+                        "secondary": "#702ae1",
+                        "primary-fixed": "#9795ff",
+                        "tertiary-fixed": "#ff9099",
+                        "on-secondary-container": "#5b00c7",
+                        "surface-container-low": "#f5eeff",
+                        "surface-dim": "#dacdff",
+                        "inverse-primary": "#8582ff",
+                        "surface-tint": "#4a40e0",
+                        "on-primary-fixed": "#000000",
+                        "on-error": "#ffefef",
+                        "on-secondary": "#f8f0ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf4ff; }
+        .font-headline { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .chat-bubble-ai { background: white; border: 1px solid #e2d7ff; border-radius: 1.5rem 1.5rem 1.5rem 0.25rem; }
+        .chat-bubble-user { background: #4a40e0; color: white; border-radius: 1.5rem 1.5rem 0.25rem 1.5rem; }
+        
+        /* Advanced Markdown CSS styling */
+        .chat-bubble-ai h1 { font-size: 1.4rem; font-weight: 700; margin-top: 1rem; margin-bottom: 0.5rem; color: #10062d; }
+        .chat-bubble-ai h2 { font-size: 1.2rem; font-weight: 600; margin-top: 0.75rem; margin-bottom: 0.5rem; color: #32294f; }
+        .chat-bubble-ai h3 { font-size: 1.1rem; font-weight: 600; margin-top: 0.5rem; margin-bottom: 0.25rem; }
+        .chat-bubble-ai p { margin-bottom: 0.75rem; line-height: 1.6; }
+        .chat-bubble-ai ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+        .chat-bubble-ai ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+        .chat-bubble-ai li { margin-bottom: 0.25rem; }
+        .chat-bubble-ai code { background: #f0e6ff; color: #702ae1; padding: 0.15rem 0.35rem; border-radius: 0.375rem; font-family: Courier, monospace; font-size: 0.9em; font-weight: 600; }
+        .chat-bubble-ai pre { background: #1a0f30; color: #f4f1ff; padding: 1.25rem; border-radius: 1rem; overflow-x: auto; margin-bottom: 1rem; position: relative; border: 1px solid #b2a6d5/30; }
+        .chat-bubble-ai pre code { background: transparent; color: inherit; padding: 0; border-radius: 0; font-size: 0.85em; font-family: monospace; font-weight: normal; }
+        .chat-bubble-ai blockquote { border-left: 4px solid #4a40e0; padding-left: 1rem; color: #5f557f; italic; margin-bottom: 0.75rem; }
+        
+        /* Microphone Active Animation */
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .mic-active {
+            animation: pulse-red 1.5s infinite;
+            background-color: #ef4444 !important;
+            color: white !important;
+        }
+        #fileQueueContainer::-webkit-scrollbar {
+            display: none;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .file-pill {
+            animation: fadeIn 0.2s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="text-[#32294f] h-screen flex flex-col overflow-hidden">
+
+    <!-- Top Navigation -->
+    <nav class="sticky top-0 z-50 bg-[#faf4ff]/80 backdrop-blur-xl border-b border-[#e2d7ff]/50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="/student/dashboard" class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-[#f5eeff] transition-colors">
+                    <span class="material-symbols-outlined text-primary">arrow_back</span>
+                </a>
+                <!-- Mobile Hamburger Sidebar Toggle -->
+                <button onclick="toggleSidebar()" class="w-10 h-10 rounded-xl bg-[#f5eeff] text-primary flex items-center justify-center md:hidden hover:bg-[#e8deff] transition-colors" title="Toggle Conversation History">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4a40e0] to-[#702ae1] flex items-center justify-center text-white shadow-lg">
+                    <span class="material-symbols-outlined">smart_toy</span>
+                </div>
+                <div>
+                    <h1 class="font-headline font-bold text-lg leading-none">Lumina AI</h1>
+                    <span class="text-[10px] text-green-500 font-bold uppercase tracking-widest">Online</span>
+                </div>
+            </div>
+            <div class="relative">
+                <button onclick="toggleProfileDropdown()" class="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm hover:scale-105 transition-transform">
+                    <% if (user.profile_image) { %>
+                        <img src="<%= user.profile_image %>" class="w-full h-full object-cover">
+                    <% } else { %>
+                        <div class="w-full h-full flex items-center justify-center bg-primary text-white font-bold">
+                            <%= user.name.charAt(0).toUpperCase() %>
+                        </div>
+                    <% } %>
+                </button>
+
+                <!-- Profile Dropdown -->
+                <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-[#e2d7ff] py-2 hidden z-[60]">
+                    <div class="px-4 py-2 border-b border-[#e2d7ff] mb-1">
+                        <p class="text-[10px] text-[#32294f]/50 font-bold uppercase tracking-wider">Account Settings</p>
+                    </div>
+                    <a href="/student/profile" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-[#32294f] hover:bg-[#f5eeff] transition-colors">
+                        <span class="material-symbols-outlined text-[20px]">account_circle</span> My Profile
+                    </a>
+                    <a href="/auth/logout" class="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-500 hover:bg-red-50 transition-colors">
+                        <span class="material-symbols-outlined text-[20px]">logout</span> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container with Sidebar -->
+    <div class="flex-1 flex overflow-hidden relative">
+
+        <!-- Left Sidebar: Saved Chats History -->
+        <aside id="chatSidebar" class="hidden md:flex flex-col w-80 bg-white/70 border-r border-[#e2d7ff]/50 h-full flex-shrink-0 backdrop-blur-xl transition-all duration-300 absolute md:relative z-20 top-0 left-0 bottom-0 shadow-lg md:shadow-none">
+            <!-- New Chat Action -->
+            <div class="p-4 border-b border-[#e2d7ff]/50">
+                <button onclick="startNewChat()" class="w-full py-3 px-4 bg-primary text-white font-bold rounded-2xl flex items-center justify-center gap-2 hover:bg-primary-dim transition-all shadow-md active:scale-[0.98] font-headline text-sm">
+                    <span class="material-symbols-outlined text-[20px]">add</span> Start New Chat
+                </button>
+            </div>
+            <!-- Saved Conversations List -->
+            <div class="flex-1 overflow-y-auto p-3 space-y-2" id="chatsListContainer">
+                <div class="flex justify-center items-center h-20">
+                    <span class="material-symbols-outlined animate-spin text-primary opacity-60">refresh</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Side: Chat Container Window -->
+        <div class="flex-1 flex flex-col h-full overflow-hidden bg-[#faf4ff]">
+            <!-- Chat Messages Log -->
+            <main class="flex-1 overflow-y-auto p-6 space-y-6" id="chatContainer">
+                <!-- AI Welcome Message -->
+                <div class="flex items-start gap-4 max-w-2xl">
+                    <div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary flex-shrink-0">
+                        <span class="material-symbols-outlined">smart_toy</span>
+                    </div>
+                    <div class="chat-bubble-ai p-5 shadow-sm">
+                        <p class="text-sm leading-relaxed">Hello <strong><%= user.name %></strong>! I'm Lumina AI, your personal study assistant. I can help you understand complex concepts, analyze documents you upload, or provide study tips. What would you like to explore today?</p>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Bottom Interactive Input Panel -->
+            <div class="p-6 bg-white border-t border-[#e2d7ff] relative z-10">
+                <div class="max-w-4xl mx-auto flex gap-4 items-center">
+                    <button onclick="document.getElementById('chatFile').click()" class="w-12 h-12 rounded-2xl bg-[#f5eeff] text-[#4a40e0] flex items-center justify-center hover:bg-[#e8deff] transition-colors shadow-sm flex-shrink-0" title="Attach Document/Image">
+                        <span class="material-symbols-outlined text-[24px]">attach_file</span>
+                    </button>
+                    <input type="file" id="chatFile" class="hidden" accept=".pdf,.doc,.docx,.txt,image/*" multiple onchange="handleFileSelect(this)">
+                    
+                    <div class="flex-1 relative">
+                        <div id="fileQueueContainer" class="hidden absolute -top-14 left-0 right-0 flex items-center gap-2 overflow-x-auto py-1 z-30 scrollbar-none" style="-ms-overflow-style: none; scrollbar-width: none;">
+                            <!-- Selected file pills will be dynamically rendered here -->
+                        </div>
+                        <input type="text" id="userInput" placeholder="Ask me anything..." class="w-full bg-[#f5eeff] border-none rounded-2xl px-6 py-4 focus:ring-2 focus:ring-[#4a40e0] outline-none transition-shadow pr-24">
+                        
+                        <!-- Voice Typing microphone button -->
+                        <button id="voiceTypingBtn" onclick="toggleVoiceTyping()" class="absolute right-14 top-1/2 -translate-y-1/2 w-10 h-10 text-[#4a40e0] rounded-xl flex items-center justify-center hover:bg-[#e8deff] transition-colors" title="Voice Typing (Speech-to-Text)">
+                            <span class="material-symbols-outlined" id="micIcon">mic</span>
+                        </button>
+
+                        <button id="sendBtn" onclick="sendMessage()" class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center hover:bg-primary-dim transition-colors shadow-md" title="Send Message">
+                            <span class="material-symbols-outlined">send</span>
+                        </button>
+                        <button id="stopBtn" onclick="stopConversation()" class="hidden absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-red-500 text-white rounded-xl flex items-center justify-center hover:bg-red-600 transition-colors shadow-md" title="Stop generating">
+                            <span class="material-symbols-outlined">stop</span>
+                        </button>
+                    </div>
+                </div>
+                <p class="text-center text-[10px] text-[#32294f]/40 mt-4 font-medium uppercase tracking-widest">Powered by Gemini AI Engine</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Client-Side Scripts -->
+    <script>
+        let currentAbortController = null;
+        let activeChatId = 'new'; // 'new' represents a fresh chat screen
+
+        // Toggle mobile profile settings dropdown
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Toggle mobile responsive sidebar history list
+        function toggleSidebar() {
+            const sidebar = document.getElementById('chatSidebar');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('flex');
+        }
+
+        const chatContainer = document.getElementById('chatContainer');
+        const userInput = document.getElementById('userInput');
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                if (currentAbortController) {
+                    e.preventDefault();
+                    return;
+                }
+                sendMessage();
+            }
+        });
+
+        let selectedFiles = [];
+
+        function handleFileSelect(input) {
+            if (input.files && input.files.length > 0) {
+                for (let i = 0; i < input.files.length; i++) {
+                    const file = input.files[i];
+                    // Prevent duplicate entries in queue
+                    const exists = selectedFiles.some(f => f.name === file.name && f.size === file.size);
+                    if (!exists) {
+                        selectedFiles.push(file);
+                    }
+                }
+                renderFileQueue();
+            }
+            input.value = '';
+        }
+
+        function removeQueuedFile(index) {
+            selectedFiles.splice(index, 1);
+            renderFileQueue();
+        }
+
+        function renderFileQueue() {
+            const container = document.getElementById('fileQueueContainer');
+            if (selectedFiles.length === 0) {
+                container.classList.add('hidden');
+                container.innerHTML = '';
+                return;
+            }
+
+            container.classList.remove('hidden');
+            container.innerHTML = '';
+            selectedFiles.forEach((file, index) => {
+                const pill = document.createElement('div');
+                pill.className = 'file-pill inline-flex items-center gap-1.5 bg-[#e8deff] text-[#4a40e0] text-xs font-bold px-3 py-1.5 rounded-xl shadow-md border border-[#d4c3ff] flex-shrink-0';
+                
+                let iconName = 'draft';
+                if (file.type.startsWith('image/')) iconName = 'image';
+                else if (file.name.endsWith('.pdf')) iconName = 'picture_as_pdf';
+                else if (file.name.endsWith('.doc') || file.name.endsWith('.docx')) iconName = 'description';
+
+                pill.innerHTML = `
+                    <span class="material-symbols-outlined text-[16px]">${iconName}</span>
+                    <span class="truncate max-w-[140px]" title="${file.name}">${file.name}</span>
+                    <button onclick="removeQueuedFile(${index})" class="ml-1 hover:text-red-500 flex items-center"><span class="material-symbols-outlined text-[14px]">close</span></button>
+                `;
+                container.appendChild(pill);
+            });
+        }
+
+        function showStopButton() {
+            document.getElementById('sendBtn').classList.add('hidden');
+            document.getElementById('stopBtn').classList.remove('hidden');
+        }
+
+        function showSendButton() {
+            document.getElementById('sendBtn').classList.remove('hidden');
+            document.getElementById('stopBtn').classList.add('hidden');
+        }
+
+        function stopConversation() {
+            if (currentAbortController) {
+                currentAbortController.abort();
+                currentAbortController = null;
+                showSendButton();
+            }
+        }
+
+        // Send chat messages asynchronously
+        async function sendMessage() {
+            if (currentAbortController) return;
+
+            const text = userInput.value.trim();
+            if (!text && selectedFiles.length === 0) return;
+
+            // Stop voice speaking if currently active
+            if (window.speechSynthesis && window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
+
+            // Append student user message bubble
+            let userMsg = text || (selectedFiles.length > 1 ? "Uploaded multiple files for analysis." : "Uploaded a file.");
+            if (selectedFiles.length > 0) {
+                userMsg += `<div class="flex flex-wrap gap-1.5 mt-2">`;
+                selectedFiles.forEach(file => {
+                    userMsg += `<span class="inline-flex items-center gap-1 text-[10px] bg-white/20 px-2 py-1 rounded"><span class="material-symbols-outlined text-[12px]">attachment</span> ${file.name}</span>`;
+                });
+                userMsg += `</div>`;
+            }
+            appendMessage('user', userMsg);
+            
+            userInput.value = '';
+            const filesToSend = [...selectedFiles];
+            selectedFiles = [];
+            renderFileQueue();
+
+            // Append loading animation bubble
+            const loadingId = 'loading-' + Date.now();
+            appendLoading(loadingId);
+
+            currentAbortController = new AbortController();
+            const signal = currentAbortController.signal;
+            showStopButton();
+
+            let msgId = null;
+            let bubble = null;
+
+            try {
+                const formData = new FormData();
+                if (text) formData.append('term', text);
+                if (filesToSend.length > 0) {
+                    filesToSend.forEach(file => {
+                        formData.append('chat_files', file);
+                    });
+                }
+                
+                // Attach active chat ID
+                formData.append('chat_id', activeChatId);
+
+                const res = await fetch('/ai/student/study-buddy', {
+                    method: 'POST',
+                    body: formData,
+                    signal: signal
+                });
+                
+                if (document.getElementById(loadingId)) {
+                    document.getElementById(loadingId).remove();
+                }
+                
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    appendMessage('ai', errorText);
+                    return;
+                }
+
+                // If this was a new chat session, capture the newly created ID from headers!
+                const serverChatId = res.headers.get('X-Chat-ID');
+                if (serverChatId && activeChatId === 'new') {
+                    activeChatId = serverChatId;
+                }
+
+                msgId = 'msg-' + Date.now();
+                appendEmptyMessage('ai', msgId);
+                bubble = document.getElementById(msgId);
+                
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder();
+                let fullText = "";
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value, { stream: true });
+                    fullText += chunk;
+                    
+                    if (fullText.startsWith("ERROR: ")) {
+                        bubble.innerHTML = formatText(fullText.substring(7));
+                    } else {
+                        bubble.innerHTML = formatText(fullText);
+                    }
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }
+
+                // Append speak and copy features to the completed AI bubble!
+                appendSpeechButtonToBubble(bubble.parentElement, fullText);
+                
+                // Refresh list to show newly created chat title
+                loadSavedChatsList();
+
+            } catch (err) {
+                if (document.getElementById(loadingId)) {
+                    document.getElementById(loadingId).remove();
+                }
+                if (err.name === 'AbortError') {
+                    if (bubble) {
+                        bubble.innerHTML += `<em class="text-xs text-red-500 block mt-2 border-t border-red-100 pt-2 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">block</span> Generation stopped by user.</em>`;
+                    } else {
+                        appendMessage('ai', 'Generation stopped by user.');
+                    }
+                } else {
+                    appendMessage('ai', 'Connection error. Check your internet.');
+                }
+            } finally {
+                currentAbortController = null;
+                showSendButton();
+            }
+        }
+
+        // Add Volume / Audio Assistant icon and interactive suggestion chips to bubble dynamically
+        function appendSpeechButtonToBubble(bubbleContainer, rawText) {
+            // 1. Extract and render Suggestion Chips if present
+            const items = bubbleContainer.querySelectorAll('li');
+            const suggestions = [];
+            
+            items.forEach(item => {
+                const text = item.innerHTML;
+                const match = text.match(/["“]([^"”]+)["”]/);
+                if (match && (text.includes('Ask:') || text.includes('Try asking:') || text.includes('Ask<strong>:</strong>') || text.includes('Ask :'))) {
+                    suggestions.push(match[1]);
+                    item.style.display = 'none';
+                }
+            });
+
+            if (suggestions.length > 0) {
+                // Hide the parent <ul> and any suggestion headers/horizontal rules
+                const uls = bubbleContainer.querySelectorAll('ul');
+                uls.forEach(ul => {
+                    const visibleItems = Array.from(ul.querySelectorAll('li')).filter(li => li.style.display !== 'none');
+                    if (visibleItems.length === 0) {
+                        ul.style.display = 'none';
+                    }
+                });
+
+                const headers = Array.from(bubbleContainer.querySelectorAll('h3, h4, p, strong')).filter(el => {
+                    const txt = el.textContent.toLowerCase();
+                    return txt.includes('suggested follow-up') || txt.includes('suggested next step') || txt.includes('suggested followups') || txt.includes('💡');
+                });
+                headers.forEach(header => header.style.display = 'none');
+
+                const hrs = bubbleContainer.querySelectorAll('hr');
+                if (hrs.length > 0) {
+                    hrs[hrs.length - 1].style.display = 'none';
+                }
+
+                // Render beautiful suggestion chips container
+                const chipContainer = document.createElement('div');
+                chipContainer.className = 'mt-4 border-t border-[#e2d7ff]/30 pt-3 flex flex-col gap-2';
+                chipContainer.innerHTML = `
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-[#32294f]/50 mb-1 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">tips_and_updates</span> Suggested Follow-ups
+                    </p>
+                    <div class="flex flex-wrap gap-2"></div>
+                `;
+                
+                const chipsFlex = chipContainer.querySelector('div');
+                suggestions.forEach(prompt => {
+                    const chip = document.createElement('button');
+                    chip.className = 'px-3.5 py-2 bg-[#f5eeff] hover:bg-primary hover:text-white border border-[#d4c3ff] hover:border-primary text-primary text-xs font-semibold rounded-xl transition-all duration-200 text-left shadow-sm active:scale-[0.98]';
+                    chip.textContent = prompt;
+                    chip.onclick = () => {
+                        userInput.value = prompt;
+                        sendMessage();
+                    };
+                    chipsFlex.appendChild(chip);
+                });
+                bubbleContainer.appendChild(chipContainer);
+            }
+
+            // 2. Append speak and copy buttons
+            const footer = document.createElement('div');
+            footer.className = 'mt-3 border-t border-[#e2d7ff]/30 pt-2 flex gap-2 justify-end';
+            
+            // Text to speech button
+            const speechBtn = document.createElement('button');
+            speechBtn.className = 'w-8 h-8 rounded-lg bg-[#f5eeff] text-primary flex items-center justify-center hover:bg-[#e8deff] transition-colors';
+            speechBtn.title = 'Voice Assistant (Speak Aloud)';
+            speechBtn.innerHTML = `<span class="material-symbols-outlined text-[18px]">volume_up</span>`;
+            speechBtn.onclick = () => speakMessage(speechBtn, rawText);
+            footer.appendChild(speechBtn);
+
+            // Copy to clipboard button
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'w-8 h-8 rounded-lg bg-[#f5eeff] text-primary flex items-center justify-center hover:bg-[#e8deff] transition-colors';
+            copyBtn.title = 'Copy Text';
+            copyBtn.innerHTML = `<span class="material-symbols-outlined text-[18px]">content_copy</span>`;
+            copyBtn.onclick = () => {
+                navigator.clipboard.writeText(rawText);
+                copyBtn.querySelector('.material-symbols-outlined').innerText = 'done';
+                setTimeout(() => {
+                    copyBtn.querySelector('.material-symbols-outlined').innerText = 'content_copy';
+                }, 2000);
+            };
+            footer.appendChild(copyBtn);
+
+            bubbleContainer.appendChild(footer);
+        }
+
+        function appendEmptyMessage(role, id) {
+            const div = document.createElement('div');
+            div.className = `flex items-start gap-4`;
+            div.innerHTML = `
+                <div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary flex-shrink-0">
+                    <span class="material-symbols-outlined">smart_toy</span>
+                </div>
+                <div class="chat-bubble-ai p-5 shadow-sm max-w-2xl w-full flex flex-col">
+                    <div id="${id}" class="text-sm leading-relaxed whitespace-pre-wrap"></div>
+                </div>
+            `;
+            chatContainer.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function appendMessage(role, text, renderTTS = true) {
+            const div = document.createElement('div');
+            div.className = `flex ${role === 'user' ? 'justify-end' : 'items-start'} gap-4`;
+            
+            if (role === 'user') {
+                div.innerHTML = `
+                    <div class="chat-bubble-user p-5 shadow-lg max-w-2xl">
+                        <p class="text-sm leading-relaxed">${text}</p>
+                    </div>
+                `;
+            } else {
+                div.innerHTML = `
+                    <div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary flex-shrink-0">
+                        <span class="material-symbols-outlined">smart_toy</span>
+                    </div>
+                    <div class="chat-bubble-ai p-5 shadow-sm max-w-2xl w-full flex flex-col">
+                        <div class="text-sm leading-relaxed">${formatText(text)}</div>
+                    </div>
+                `;
+                
+                if (renderTTS) {
+                    appendSpeechButtonToBubble(div.querySelector('.chat-bubble-ai'), text);
+                }
+            }
+            chatContainer.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function appendLoading(id) {
+            const div = document.createElement('div');
+            div.id = id;
+            div.className = 'flex items-start gap-4 max-w-2xl';
+            div.innerHTML = `
+                <div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary flex-shrink-0">
+                    <span class="material-symbols-outlined animate-spin">refresh</span>
+                </div>
+                <div class="chat-bubble-ai p-5 shadow-sm">
+                    <p class="text-xs font-bold uppercase tracking-widest text-primary/60">Thinking...</p>
+                </div>
+            `;
+            chatContainer.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Markdown formatter utilizing marked.js
+        function formatText(text) {
+            if (typeof marked !== 'undefined') {
+                try {
+                    return marked.parse(text);
+                } catch (e) {
+                    console.error("Markdown parsing failed, falling back:", e);
+                }
+            }
+            // Fallback plain regex formatting
+            return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                       .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                       .replace(/\n/g, '<br>');
+        }
+
+        /* ==========================================
+           TEXT-TO-SPEECH (VOICE ASSISTANT) INTEGRATION
+           ========================================== */
+        let currentUtterance = null;
+        let currentSpeakingBtn = null;
+
+        function speakMessage(btn, text) {
+            if (!window.speechSynthesis) {
+                alert("Text-to-Speech is not supported in this browser.");
+                return;
+            }
+
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+                if (currentSpeakingBtn) {
+                    currentSpeakingBtn.querySelector('.material-symbols-outlined').innerText = 'volume_up';
+                    currentSpeakingBtn.classList.remove('bg-primary', 'text-white');
+                    currentSpeakingBtn.classList.add('bg-[#f5eeff]', 'text-primary');
+                }
+                
+                // If double clicked same icon, just stop reading
+                if (currentSpeakingBtn === btn) {
+                    currentSpeakingBtn = null;
+                    return;
+                }
+            }
+
+            // Stripping markdown HTML elements from synthesized speech text
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = formatText(text);
+            const cleanText = tempDiv.textContent || tempDiv.innerText || "";
+
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            currentUtterance = utterance;
+            currentSpeakingBtn = btn;
+
+            btn.querySelector('.material-symbols-outlined').innerText = 'volume_off';
+            btn.classList.add('bg-primary', 'text-white');
+            btn.classList.remove('bg-[#f5eeff]', 'text-primary');
+
+            utterance.onend = () => {
+                btn.querySelector('.material-symbols-outlined').innerText = 'volume_up';
+                btn.classList.remove('bg-primary', 'text-white');
+                btn.classList.add('bg-[#f5eeff]', 'text-primary');
+                if (currentSpeakingBtn === btn) {
+                    currentSpeakingBtn = null;
+                }
+            };
+
+            utterance.onerror = () => {
+                btn.querySelector('.material-symbols-outlined').innerText = 'volume_up';
+                btn.classList.remove('bg-primary', 'text-white');
+                btn.classList.add('bg-[#f5eeff]', 'text-primary');
+                if (currentSpeakingBtn === btn) {
+                    currentSpeakingBtn = null;
+                }
+            };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        /* ==========================================
+           SPEECH-TO-TEXT (VOICE TYPING) INTEGRATION
+           ========================================== */
+        let speechRecognition = null;
+        let isListening = false;
+
+        function initSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                console.warn("Speech recognition is not supported in this browser.");
+                document.getElementById('voiceTypingBtn').style.display = 'none';
+                return;
+            }
+            
+            speechRecognition = new SpeechRecognition();
+            speechRecognition.continuous = false;
+            speechRecognition.interimResults = false;
+            speechRecognition.lang = 'en-US';
+
+            speechRecognition.onstart = () => {
+                isListening = true;
+                const btn = document.getElementById('voiceTypingBtn');
+                btn.classList.add('mic-active');
+                document.getElementById('micIcon').innerText = 'mic_off';
+            };
+
+            speechRecognition.onresult = (e) => {
+                const transcript = e.results[0][0].transcript;
+                const input = document.getElementById('userInput');
+                input.value = (input.value + " " + transcript).trim();
+                input.focus();
+            };
+
+            speechRecognition.onend = () => {
+                isListening = false;
+                const btn = document.getElementById('voiceTypingBtn');
+                btn.classList.remove('mic-active');
+                document.getElementById('micIcon').innerText = 'mic';
+            };
+
+            speechRecognition.onerror = (e) => {
+                console.error("Speech recognition error:", e.error);
+                isListening = false;
+                const btn = document.getElementById('voiceTypingBtn');
+                btn.classList.remove('mic-active');
+                document.getElementById('micIcon').innerText = 'mic';
+
+                let errorMessage = "Voice typing error occurred.";
+                if (e.error === 'not-allowed') {
+                    errorMessage = "Microphone access was denied or blocked. Please click the microphone/lock icon in your browser's address bar and set permission to 'Allow'.";
+                } else if (e.error === 'service-not-allowed') {
+                    errorMessage = "Voice service not allowed. Brave Browser blocks Google Speech services by default. Please go to <strong>brave://settings/languages</strong>, enable 'Use Google services for voice search', restart the browser, and try again.";
+                } else if (e.error === 'network') {
+                    errorMessage = "Network or Speech Recognition Service error. <strong>If you are using Brave Browser</strong>, Google Speech services are blocked by default. Please go to <code class='bg-[#f0e6ff] px-1 rounded text-[#702ae1] font-mono'>brave://settings/languages</code>, turn on <strong>'Use Google services for voice search'</strong>, restart your browser, and try again. Otherwise, please check your internet connection.";
+                } else if (e.error === 'no-speech') {
+                    errorMessage = "No speech was detected. Please make sure your microphone is connected and speak clearly.";
+                } else {
+                    errorMessage = `Voice typing failed (${e.error}). Please check your microphone connection, permissions, or browser voice settings.`;
+                }
+                showVoiceAlert(errorMessage);
+            };
+        }
+
+        function toggleVoiceTyping() {
+            if (!speechRecognition) {
+                initSpeechRecognition();
+            }
+            if (!speechRecognition) return;
+
+            if (isListening) {
+                speechRecognition.stop();
+            } else {
+                speechRecognition.start();
+            }
+        }
+
+        /* ==========================================
+           SAVED CHATS AJAX & SIDEBAR FUNCTIONALITY
+           ========================================== */
+        
+        async function loadSavedChatsList() {
+            try {
+                const res = await fetch('/ai/student/chats');
+                const data = await res.json();
+                if (data.success) {
+                    renderChatsList(data.chats);
+                }
+            } catch (err) {
+                console.error("Error fetching chats list:", err);
+            }
+        }
+
+        function renderChatsList(chats) {
+            const container = document.getElementById('chatsListContainer');
+            container.innerHTML = '';
+
+            if (chats.length === 0) {
+                container.innerHTML = `<p class="text-xs text-[#32294f]/40 font-bold text-center mt-6 uppercase tracking-wider">No history saved</p>`;
+                return;
+            }
+
+            chats.forEach(chat => {
+                const div = document.createElement('div');
+                const isActive = chat.id.toString() === activeChatId.toString();
+                
+                div.className = `group flex items-center justify-between p-3 rounded-2xl cursor-pointer transition-all ${
+                    isActive 
+                        ? 'bg-primary text-white shadow-md' 
+                        : 'hover:bg-[#f5eeff] text-[#32294f] border border-transparent hover:border-[#e2d7ff]/30'
+                }`;
+                
+                div.onclick = (e) => {
+                    if (e.target.closest('.action-btn') || e.target.closest('.chat-input-field')) return;
+                    selectChat(chat.id);
+                };
+
+                div.innerHTML = `
+                    <div class="flex items-center gap-3 overflow-hidden flex-1">
+                        <span class="material-symbols-outlined text-[20px] flex-shrink-0 opacity-70">
+                            chat_bubble
+                        </span>
+                        <input type="text" value="${chat.title}" 
+                            class="chat-input-field bg-transparent border-none p-0 text-xs font-bold truncate w-full outline-none focus:ring-0 focus:border-b focus:border-white/50 cursor-pointer disabled:pointer-events-none" 
+                            id="chat-title-input-${chat.id}"
+                            disabled
+                            onkeypress="handleRenameKeyPress(event, ${chat.id})"
+                            onblur="saveRename(${chat.id})">
+                    </div>
+                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <!-- Rename -->
+                        <button onclick="event.stopPropagation(); enableRename(${chat.id})" class="action-btn w-6 h-6 rounded-lg flex items-center justify-center hover:bg-black/10 transition-colors" title="Rename Conversation">
+                            <span class="material-symbols-outlined text-[16px]">edit</span>
+                        </button>
+                        <!-- Delete -->
+                        <button onclick="event.stopPropagation(); deleteChat(${chat.id})" class="action-btn w-6 h-6 rounded-lg flex items-center justify-center hover:bg-black/10 hover:text-red-300 transition-colors" title="Delete Conversation">
+                            <span class="material-symbols-outlined text-[16px]">delete</span>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Start/Clear screen for a new chat conversation
+        function startNewChat() {
+            // Stop voice speaking if currently active
+            if (window.speechSynthesis && window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
+
+            activeChatId = 'new';
+            
+            // Restore default welcome message layout
+            document.getElementById('chatContainer').innerHTML = `
+                <div class="flex items-start gap-4 max-w-2xl">
+                    <div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary flex-shrink-0">
+                        <span class="material-symbols-outlined">smart_toy</span>
+                    </div>
+                    <div class="chat-bubble-ai p-5 shadow-sm">
+                        <p class="text-sm leading-relaxed">Hello <strong><%= user.name %></strong>! I'm Lumina AI, your personal study assistant. I can help you understand complex concepts, analyze documents you upload, or provide study tips. What would you like to explore today?</p>
+                    </div>
+                </div>
+            `;
+            loadSavedChatsList();
+            
+            // Close mobile responsive sidebar if opened
+            if (window.innerWidth < 768) {
+                document.getElementById('chatSidebar').classList.add('hidden');
+            }
+        }
+
+        // Select a conversation from sidebar history and load it dynamically
+        async function selectChat(id) {
+            if (activeChatId.toString() === id.toString()) return;
+            activeChatId = id;
+            loadSavedChatsList(); // Updates active styles in sidebar
+
+            const container = document.getElementById('chatContainer');
+            container.innerHTML = `
+                <div class="flex justify-center items-center h-full">
+                    <span class="material-symbols-outlined animate-spin text-primary text-[32px]">refresh</span>
+                </div>
+            `;
+
+            // Stop voice speaking if currently active
+            if (window.speechSynthesis && window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
+
+            try {
+                const res = await fetch(`/ai/student/chats/${id}`);
+                const data = await res.json();
+                if (data.success) {
+                    container.innerHTML = '';
+                    if (data.messages.length === 0) {
+                        appendMessage('ai', "This conversation has no message log yet.");
+                    } else {
+                        data.messages.forEach(msg => {
+                            appendMessage(msg.role, msg.content, msg.role === 'ai');
+                        });
+                    }
+                    container.scrollTop = container.scrollHeight;
+                }
+            } catch (err) {
+                console.error("Error loading chat messages:", err);
+                container.innerHTML = `<p class="text-center text-red-500 font-semibold py-12">Failed to load chat history.</p>`;
+            }
+
+            // Close mobile responsive sidebar if opened
+            if (window.innerWidth < 768) {
+                document.getElementById('chatSidebar').classList.add('hidden');
+            }
+        }
+
+        function enableRename(id) {
+            const input = document.getElementById(`chat-title-input-${id}`);
+            input.disabled = false;
+            setTimeout(() => {
+                input.focus();
+                input.select();
+            }, 50);
+        }
+
+        async function saveRename(id) {
+            const input = document.getElementById(`chat-title-input-${id}`);
+            if (input.disabled) return;
+            const newTitle = input.value.trim();
+            input.disabled = true;
+
+            if (!newTitle) {
+                loadSavedChatsList(); // Revert back if empty
+                return;
+            }
+
+            try {
+                const res = await fetch(`/ai/student/chats/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: newTitle })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    loadSavedChatsList();
+                } else {
+                    loadSavedChatsList(); // Revert back on failure
+                }
+            } catch (err) {
+                console.error("Error renaming chat:", err);
+                loadSavedChatsList(); // Revert back on error
+            }
+        }
+
+        function handleRenameKeyPress(e, id) {
+            if (e.key === 'Enter') {
+                saveRename(id);
+            } else if (e.key === 'Escape') {
+                const input = document.getElementById(`chat-title-input-${id}`);
+                input.disabled = true;
+                loadSavedChatsList();
+            }
+        }
+
+        async function deleteChat(id) {
+            if (!confirm("Are you sure you want to delete this conversation?")) return;
+
+            // Stop voice speaking if currently active
+            if (window.speechSynthesis && window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
+
+            try {
+                const res = await fetch(`/ai/student/chats/${id}`, {
+                    method: 'DELETE'
+                });
+                const data = await res.json();
+                if (data.success) {
+                    if (activeChatId.toString() === id.toString()) {
+                        startNewChat();
+                    } else {
+                        loadSavedChatsList();
+                    }
+                }
+            } catch (err) {
+                console.error("Error deleting chat:", err);
+            }
+        }
+
+        // Initialize voice typing engine and load lists on start
+        window.addEventListener('DOMContentLoaded', () => {
+            initSpeechRecognition();
+            loadSavedChatsList();
+        });
+    </script>
+
+    <!-- Beautiful Toast Notification Container -->
+    <div id="toastContainer" class="fixed top-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+    <script>
+        function showVoiceAlert(message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'w-96 bg-white border-l-4 border-red-500 rounded-xl shadow-2xl p-4 flex gap-3 pointer-events-auto transform translate-y-2 opacity-0 transition-all duration-300 z-[100]';
+            toast.innerHTML = `
+                <div class="text-red-500 flex-shrink-0">
+                    <span class="material-symbols-outlined">warning</span>
+                </div>
+                <div class="flex-1">
+                    <h4 class="font-headline font-bold text-xs text-[#10062d]">Voice Typing Status</h4>
+                    <p class="text-xs text-[#32294f] mt-1 leading-relaxed">${message}</p>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-[#32294f]/50 hover:text-red-500 flex-shrink-0 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[16px]">close</span>
+                </button>
+            `;
+            container.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            // Auto dismiss after 10 seconds
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.classList.add('translate-y-2', 'opacity-0');
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 10000);
+        }
+    </script>
+</body>
+</html>
